@@ -20,14 +20,3 @@ html {
 body {
   margin-bottom: 60px;
 }
-
-
-.edit-form input,
-.edit-form textarea,
-.edit-form select {
-    min-width: 250px;
-}
-
-.edit-form textarea {
-    min-height: 120px;
-}

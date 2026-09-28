@@ -1,0 +1,48 @@
+﻿@model List<Author>
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">📚 Authors</h3>
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int i = 1;
+                    }
+
+                    @foreach (var author in Model)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@author.FullName</td>
+                        </tr>
+
+                        i++;
+                    }
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="card-footer text-end">
+            Total Authors: <strong>@Model.Count</strong>
+        </div>
+    </div>
+
+</div>

@@ -1,6 +1,20 @@
+ using eBooks.Data;
+using eBooks.Data.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllersWithViews();
+
+//DbContext configuration
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+//services configuration
+builder.Services.AddScoped<IAuthorsService, AuthorsService>();
+builder.Services.AddScoped<IBooksService, BooksService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<IPublishersService, PublishersService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -23,5 +37,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Seed the database
+AppDbInitializer.Seed(app);
 
 app.Run();

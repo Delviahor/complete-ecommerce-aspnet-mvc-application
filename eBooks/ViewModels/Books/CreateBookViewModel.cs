@@ -1,12 +1,15 @@
 ﻿using eBooks.Data.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace eBooks.ViewModels.Books
 {
     public class CreateBookViewModel
     {
+        [StringLength(100, ErrorMessage = "El titulo no puede superar los 100 caracteres.")]
         public string Title { get; set; }
 
+        [StringLength(600, ErrorMessage = "La descripcion no puede superar los 600 caracteres.")]
         public string? Description { get; set; }
         public int Pages { get; set; }
         public decimal Price { get; set; }

@@ -7,7 +7,9 @@ namespace eBooks.Models
         [Key]
         public int AuthorId { get; set; }
         public string? ProfileURLPicture { get; set; }
-        [MaxLength(100)]
+        
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [StringLength(100)]
         public required string FullName { get; set; }
         public string? Biography { get; set; }
 

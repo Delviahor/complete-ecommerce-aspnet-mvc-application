@@ -28,16 +28,24 @@ namespace eBooks.Controllers
             return View("Create");
         }
 
-        //HTTP POST: publishers/Create
+        //HTTP POST: Publishers/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Publisher publisher)
+        public async Task<IActionResult> Create(CreatePublisherViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View("Create", publisher);
+                return View("Create", viewModel);
             }
+
+            var publisher = new Publisher
+            {
+                Name = viewModel.Name,
+                ProfileURLPicture = viewModel.ProfileURLPicture
+            };
+
             await _publishersService.AddAsync(publisher);
+
             return RedirectToAction(nameof(Index));
         }
 

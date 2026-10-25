@@ -31,13 +31,22 @@ namespace eBooks.Controllers
         //HTTP POST: Authors/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Author author)
+        public async Task<IActionResult> Create(CreateAuthorViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View("Create", author);
+                return View("Create", viewModel);
             }
+
+            var author = new Author
+            {
+                FullName = viewModel.FullName,
+                Biography = viewModel.Biography,
+                ProfileURLPicture = viewModel.ProfileURLPicture
+            };
+
             await _authorsService.AddAsync(author);
+
             return RedirectToAction(nameof(Index));
         }
 

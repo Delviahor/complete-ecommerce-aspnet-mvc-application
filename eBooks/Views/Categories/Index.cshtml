@@ -1,0 +1,23 @@
+﻿@model IEnumerable<eBooks.Models.Category>
+
+<h1>Categories</h1>
+
+<p>Total de categorías: @Model.Count()</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.CategoryId</td>
+                <td>@category.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

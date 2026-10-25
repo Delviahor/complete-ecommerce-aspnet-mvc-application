@@ -1,0 +1,33 @@
+﻿@model eBooks.ViewModels.Categories.CreateCategoryViewModel
+
+<h1>Nueva categoría</h1>
+
+<form asp-controller="Categories"
+      asp-action="Create"
+      method="post">
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">
+            Nombre de la categoría
+        </label>
+
+        <input asp-for="Name" class="form-control" />
+
+        <span asp-validation-for="Name"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Guardar
+    </button>
+
+    <a asp-controller="Categories"
+       asp-action="Index"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

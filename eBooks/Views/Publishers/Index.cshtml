@@ -4,45 +4,59 @@
     ViewData["Title"] = "Publishers";
 }
 
-<div class="container mt-4">
+<div class="publishers-page">
+    <h2 class="retro-heading">🏢 Publishers.exe</h2>
 
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">📚 Publishers</h3>
-        </div>
+    <div class="table-container">
+        <table class="books-table publishers-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Photo</th>
+                    <th>Publisher Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-        <div class="card-body">
-
-            <table class="table table-hover table-striped align-middle">
-                <thead class="table-dark">
+            <tbody>
+                @foreach (var publisher in Model)
+                {
                     <tr>
-                        <th>#</th>
-                        <th>Full Name</th>
+                        <td class="publisher-id">
+                            @publisher.PublisherId
+                        </td>
+
+                        <td class="publisher-photo">
+                            @if (!string.IsNullOrWhiteSpace(publisher.ProfileURLPicture))
+                            {
+                                <img src="@publisher.ProfileURLPicture"
+                                     alt="Photo of @publisher.Name"
+                                     class="publisher-thumbnail" />
+                            }
+                            else
+                            {
+                                <span class="no-photo">No photo</span>
+                            }
+                        </td>
+
+                        <td class="publisher-name">
+                            @publisher.Name
+                        </td>
+
+                        <td class="book-actions">
+                            <a asp-action="Edit"
+                               asp-route-id="@publisher.PublisherId"
+                               class="btn btn-warning">
+                                Edit
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-
-                <tbody>
-                    @{
-                        int i = 1;
-                    }
-
-                    @foreach (var publisher in Model)
-                    {
-                        <tr>
-                            <td>@i</td>
-                            <td>@publisher.Name</td>
-                        </tr>
-
-                        i++;
-                    }
-                </tbody>
-            </table>
-
-        </div>
-
-        <div class="card-footer text-end">
-            Total publishers: <strong>@Model.Count</strong>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 
+    <p class="authors-count">
+        Total publishers: <strong>@Model.Count</strong>
+    </p>
 </div>

@@ -11,6 +11,26 @@
         <input asp-for="Title" />
     </div>
 
+
+    <div class="mb-3">
+        <label asp-for="CoverURLPicture">Book Cover URL</label>
+        <input asp-for="CoverURLPicture"
+               id="coverUrlInput"
+               type="url"
+               class="form-control"
+               placeholder="https://example.com/cover.jpg" />
+
+        <div class="mt-2">
+            <img id="coverPreview"
+                 src="@Model.CoverURLPicture"
+                 alt="Book cover preview"
+                 style="max-width: 140px; max-height: 200px; object-fit: contain;"
+                 onerror="this.style.display='none'"
+                 onload="this.style.display='block'" />
+        </div>
+    </div>
+
+
     <div class="mb-3">
         <label asp-for="Description"></label>
         <textarea asp-for="Description"></textarea>
@@ -79,5 +99,20 @@
     <button type="submit">
         Save changes
     </button>
+
+
+    <script>
+        const coverInput = document.getElementById("coverUrlInput");
+        const coverPreview = document.getElementById("coverPreview");
+
+        coverInput.addEventListener("input", function () {
+            coverPreview.style.display = "none";
+
+            if (coverInput.value.trim()) {
+                coverPreview.src = coverInput.value.trim();
+            }
+        });
+    </script>
+
 
 </form>

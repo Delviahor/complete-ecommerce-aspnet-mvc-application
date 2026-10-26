@@ -1,63 +1,165 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - eBooks</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/eBooks.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">eBooks</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class= "navbar-nav flex-grow-1">
-                            <a class=" nav-link text-dark" asp-controller="Authors" asp-action="Index"> <i class=" badge-info bi-film"> </i>Authors</a>
 
+    <title>@ViewData["Title"] - eBooks.exe</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+    <link rel="stylesheet"
+          href="~/eBooks.styles.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+    <div class="retro-shell">
+
+        <header class="site-header">
+            <div class="top-strip">
+                <span>★ WELCOME TO THE INTERNET ★</span>
+                <span class="online-indicator">
+                    <span class="online-dot"></span> SYSTEM ONLINE
+                </span>
+            </div>
+
+            <a class="brand-logo"
+               asp-controller="Home"
+               asp-action="Index">
+                <span class="brand-symbol">📚</span>
+                <span>eBooks<span class="brand-exe">.exe</span></span>
+                <span class="brand-sparkle">✦</span>
+            </a>
+
+            <div class="brand-subtitle">
+                YOUR DIGITAL BOOK UNIVERSE
+            </div>
+
+            <div class="marquee-bar">
+                <span>★ ENTER THE WORLD OF BOOKS ★</span>
+                <span>✦ AUTHORS • STORIES • KNOWLEDGE ✦</span>
+                <span>★ BEST VIEWED WITH A LOVE FOR READING ★</span>
+            </div>
+        </header>
+
+        <nav class="retro-nav navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="navbar-toggler retro-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#retroNavbar"
+                        aria-controls="retroNavbar"
+                        aria-expanded="false"
+                        aria-label="Open navigation">
+                    ☰ MENU
+                </button>
+
+                <div class="collapse navbar-collapse" id="retroNavbar">
+                    <ul class="navbar-nav retro-nav-links">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+                                🏠 HOME
+                            </a>
                         </li>
 
-                        <li class ="nav-item dropdown">
-                            <a class=" nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="button"
-                               aria-haspopup="true" aria-expanded="false">
-                                <i class="bi bi-gear"> </i>Management
-                           </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" asp-controller="Books" asp-action="Index"><i class="bi bi-camera-reels"> </i>Books</a>
-                                <a class="dropdown-item" asp-controller="Authors" asp-action="Index"><i class="bi bi-headset"> </i>Authors</a>
-                                <a class="dropdown-item" asp-controller="Genres" asp-action="Index"><i class="bi bi-person-square"> </i>Genres</a>
-                            </div>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Books"
+                               asp-action="Index">
+                                📖 BOOKS
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Authors"
+                               asp-action="Index">
+                                ✍️ AUTHORS
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Categories"
+                               asp-action="Index">
+                                💿 CATEGORIES
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Publishers"
+                               asp-action="Index">
+                                🏢 PUBLISHERS
+                            </a>
                         </li>
                     </ul>
-                    <form class="form-inline my-2 my-lg-0" asp-controller="Books" asp-action="Filter" style="padding-right: 25px;">
-                        <input name="searchString" type="text" class="form-control" placeholder="Search for a book...">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="bi bi-search"></i></button>
+
+                    <form class="retro-search"
+                          asp-controller="Books"
+                          asp-action="Filter"
+                          method="get">
+
+                        <input name="searchString"
+                               type="search"
+                               class="form-control"
+                               placeholder="Search the database..."
+                               aria-label="Search books" />
+
+                        <button type="submit"
+                                class="retro-button">
+                            GO!
+                        </button>
                     </form>
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+        <div class="under-construction">
+            <span>🚧</span>
+            <span>WELCOME, INTERNET EXPLORER!</span>
+            <span>★</span>
+            <span>YOU ARE VISITOR #0001999</span>
+            <span>🚧</span>
+        </div>
+
+        <main role="main" class="retro-main">
             @RenderBody()
         </main>
+
+        <footer class="retro-footer">
+            <div class="footer-divider">
+                ✦ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ ✦
+            </div>
+
+            <div class="footer-title">
+                📀 eBooks.exe © 2026
+            </div>
+
+            <p>MADE WITH CODE, CAFFEINE &amp; PIXELS.</p>
+
+            <a asp-controller="Home" asp-action="Privacy">
+                PRIVACY POLICY
+            </a>
+
+            <p class="footer-small">
+                THIS SITE RUNS ON PURE INTERNET MAGIC ✨
+            </p>
+        </footer>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - eBooks - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

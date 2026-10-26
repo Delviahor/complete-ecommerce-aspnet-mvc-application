@@ -4,51 +4,94 @@
     ViewData["Title"] = "Books";
 }
 
-<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Pages</th>
-            <th>Price</th>
-            <th>In Stock</th>
-            <th>Status</th>
-            <th>Language</th>
-            <th>Format</th>
-            <th>Publisher</th>
-        </tr>
+<div class="books-page">
+    <h2 class="retro-heading">📚 Books.exe</h2>
 
+    <div class="table-container">
+        <table class="books-table books-catalog-table">
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Description</th>
+                    <th>Publication</th>
+                    <th>Category</th>
+                    <th>Publisher</th>
+                    <th>Authors</th>
+                    <th>Inventory</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-    </thead>
+            <tbody>
+                @foreach (var book in Model)
+                {
+                    <tr>
+                        <td class="catalog-book">
+                            @if (!string.IsNullOrWhiteSpace(book.CoverURLPicture))
+                            {
+                                <img src="@book.CoverURLPicture"
+                                     alt="Cover of @book.Title"
+                                     class="book-cover-thumbnail" />
+                            }
+                            else
+                            {
+                                <div class="book-cover-placeholder">
+                                    NO COVER
+                                </div>
+                            }
 
-    <tbody>
-        @foreach (var book in Model)
-        {
-            <tr>
-                <td>@book.Title</td>
-                <td>@book.Description</td>
-                <td>@book.Pages</td>
-                <td>@book.Price</td>
-                <td>@book.InStock</td>
-                <td>@book.Status</td>
-                <td>@book.Language</td>
-                <td>@book.Format</td>
+                            <div class="catalog-book-title">
+                                @book.Title
+                            </div>
+                        </td>
 
-                <td>@book.Category.Name</td>
-                <td>@book.Publisher.Name</td>
+                        <td class="catalog-description">
+                            @if (!string.IsNullOrWhiteSpace(book.Description))
+                            {
+                                @book.Description
+                            }
+                            else
+                            {
+                                <span class="no-photo">No description</span>
+                            }
+                        </td>
 
-                <td>
-                    @string.Join(", ", book.AuthorBooks.Select(ab => ab.Author.FullName))
-                </td>
+                        <td class="catalog-publication">
+                            <div><strong>Pages:</strong> @book.Pages</div>
+                            <div><strong>Date:</strong> @book.PublicationDate</div>
+                            <div><strong>Language:</strong> @book.Language</div>
+                            <div><strong>Format:</strong> @book.Format</div>
+                        </td>
 
-                <td>
-                    <a asp-action="Edit"
-                       asp-route-id="@book.BookId"
-                       class="btn btn-warning">
-                        Edit
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        <td>@book.Category.Name</td>
+
+                        <td>@book.Publisher.Name</td>
+
+                        <td class="catalog-authors">
+                            @string.Join(", ",
+                            book.AuthorBooks.Select(ab => ab.Author.FullName))
+                    </td>
+
+                    <td class="catalog-inventory">
+                        <div><strong>Price:</strong> @book.Price.ToString("C")</div>
+                        <div><strong>Stock:</strong> @book.InStock</div>
+                        <div><strong>Status:</strong> @book.Status</div>
+                    </td>
+
+                    <td class="book-actions">
+                        <a asp-action="Edit"
+                           asp-route-id="@book.BookId"
+                           class="btn btn-warning">
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+                                }
+            </tbody>
+        </table>
+    </div>
+
+    <p class="authors-count">
+        Total Books: <strong>@Model.Count</strong>
+    </p>
+</div>

@@ -1,23 +1,48 @@
 ﻿@model IEnumerable<eBooks.Models.Category>
 
-<h1>Categories</h1>
+@{
+    ViewData["Title"] = "Categories";
+}
 
-<p>Total de categorías: @Model.Count()</p>
+<div class="categories-page">
+    <h2 class="retro-heading">📂 Categories.exe</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var category in Model)
-        {
-            <tr>
-                <td>@category.CategoryId</td>
-                <td>@category.Name</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="table-container">
+        <table class="books-table categories-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td class="category-id">
+                            @category.CategoryId
+                        </td>
+
+                        <td class="category-name">
+                            @category.Name
+                        </td>
+
+                        <td class="book-actions">
+                            <a asp-action="Edit"
+                               asp-route-id="@category.CategoryId"
+                               class="btn btn-warning">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <p class="authors-count">
+        Total de categorías: <strong>@Model.Count()</strong>
+    </p>
+</div>

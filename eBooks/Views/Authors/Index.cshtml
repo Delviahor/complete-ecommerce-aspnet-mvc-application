@@ -4,45 +4,75 @@
     ViewData["Title"] = "Authors";
 }
 
-<div class="container mt-4">
+<div class="authors-page">
+    <h2 class="retro-heading">📚 Authors.exe</h2>
 
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">📚 Authors</h3>
-        </div>
+    <div class="table-container">
+        <table class="books-table authors-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Photo</th>
+                    <th>Full Name</th>
+                    <th>Biography</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-        <div class="card-body">
+            <tbody>
+                @{
+                    int i = 1;
+                }
 
-            <table class="table table-hover table-striped align-middle">
-                <thead class="table-dark">
+                @foreach (var author in Model)
+                {
                     <tr>
-                        <th>#</th>
-                        <th>Full Name</th>
+                        <td>@i</td>
+
+                        <td class="author-photo">
+                            @if (!string.IsNullOrWhiteSpace(author.ProfileURLPicture))
+                            {
+                                <img src="@author.ProfileURLPicture"
+                                     alt="Photo of @author.FullName"
+                                     class="author-thumbnail" />
+                            }
+                            else
+                            {
+                                <span class="no-photo">No photo</span>
+                            }
+                        </td>
+
+                        <td class="author-name">
+                            @author.FullName
+                        </td>
+
+                        <td class="author-biography">
+                            @if (!string.IsNullOrWhiteSpace(author.Biography))
+                            {
+                                @author.Biography
+                            }
+                            else
+                            {
+                                <span class="no-photo">No biography</span>
+                            }
+                        </td>
+
+                        <td class="book-actions">
+                            <a asp-action="Edit"
+                               asp-route-id="@author.AuthorId"
+                               class="btn btn-warning">
+                                Edit
+                            </a>
+                        </td>
                     </tr>
-                </thead>
 
-                <tbody>
-                    @{
-                        int i = 1;
-                    }
-
-                    @foreach (var author in Model)
-                    {
-                        <tr>
-                            <td>@i</td>
-                            <td>@author.FullName</td>
-                        </tr>
-
-                        i++;
-                    }
-                </tbody>
-            </table>
-
-        </div>
-
-        <div class="card-footer text-end">
-            Total Authors: <strong>@Model.Count</strong>
-        </div>
+                    i++;
+                }
+            </tbody>
+        </table>
     </div>
 
+    <p class="authors-count">
+        Total Authors: <strong>@Model.Count</strong>
+    </p>
 </div>

@@ -1,64 +1,122 @@
-﻿using eBooks.Data.Enums;
+﻿
+using eBooks.Data.Enums;
 using eBooks.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace eBooks.Data
 {
     public class AppDbInitializer
     {
-        public static void Seed(IApplicationBuilder applicationBuilder)
+        public static async Task SeedAsync(
+            IApplicationBuilder applicationBuilder)
         {
-            using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
+            using var serviceScope =
+                applicationBuilder.ApplicationServices.CreateScope();
+
+            var serviceProvider = serviceScope.ServiceProvider;
+
+            var context =
+                serviceProvider.GetRequiredService<AppDbContext>();
+
+            var roleManager =
+                serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Apply pending EF Core migrations.
+            await context.Database.MigrateAsync();
+
+            // Seed Identity roles.
+            string[] roles = { "User", "Admin" };
+
+            foreach (string role in roles)
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                context.Database.EnsureCreated();
-
-                // Seed Categories
-                if (!context.Categories.Any())
+                if (!await roleManager.RoleExistsAsync(role))
                 {
-                    context.Categories.AddRange(new List<Category>()
+                    var result = await roleManager.CreateAsync(
+                        new IdentityRole(role));
+
+                    if (!result.Succeeded)
                     {
-                        new Category() { Name = "DRAFT" },
-                        new Category() { Name = "Science Fiction" },
-                        new Category() { Name = "Fantasy" },
-                        new Category() { Name = "Mystery" },
-                        new Category() { Name = "Romance" },
-                        new Category() { Name = "Horror" }
-                    });
-                    context.SaveChanges();
-                }
+                        var errors = string.Join(
+                            ", ",
+                            result.Errors.Select(e => e.Description));
 
-                // Seed Publishers
-                if (!context.Publishers.Any())
-                {
-                    context.Publishers.AddRange(new List<Publisher>()
-                    {
-                        new Publisher() { Name = "Penguin Random House" },
-                        new Publisher() { Name = "HarperCollins" },
-                        new Publisher() { Name = "Simon & Schuster" },
-                        new Publisher() { Name = "Hachette Book Group" },
-                        new Publisher() { Name = "Macmillan Publishers" }
-                    });
-                    context.SaveChanges();
+                        throw new InvalidOperationException(
+                            $"Could not create role '{role}': {errors}");
+                    }
                 }
-                // Seed Authors
-                if (!context.Authors.Any())
-                {
-                    context.Authors.AddRange(new List<Author>()
-                    {
-                        new Author() { FullName = "Isaac Asimov", Biography = "American writer and biochemist best known for his science fiction novels and popular science books. Author of the Foundation and Robot series." },
-                        new Author() { FullName = "J.K. Rowling", Biography = "British author best known for creating the Harry Potter series, one of the most successful fantasy franchises in history." },
-                        new Author() { FullName = "Agatha Christie", Biography = "British writer widely regarded as the Queen of Mystery. Creator of the famous detectives Hercule Poirot and Miss Marple." },
-                        new Author() { FullName = "Stephen King", Biography = "American author renowned for his horror, suspense, and supernatural fiction. Writer of classics such as The Shining, It, and Misery." },
-                        new Author() { FullName = "Jane Austen", Biography = "English novelist celebrated for her timeless works on society and relationships, including Pride and Prejudice and Emma." }
-                    });
-                    context.SaveChanges();
-                }
+            }
 
-                // Seed Books
-                if (!context.Books.Any())
+            // Seed Categories
+            if (!context.Categories.Any())
+            {
+                context.Categories.AddRange(new List<Category>()
                 {
-                    context.Books.AddRange(
+                    new Category() { Name = "DRAFT" },
+                    new Category() { Name = "Science Fiction" },
+                    new Category() { Name = "Fantasy" },
+                    new Category() { Name = "Mystery" },
+                    new Category() { Name = "Romance" },
+                    new Category() { Name = "Horror" }
+                });
+
+                context.SaveChanges();
+            }
+
+            // Seed Publishers
+            if (!context.Publishers.Any())
+            {
+                context.Publishers.AddRange(new List<Publisher>()
+                {
+                    new Publisher() { Name = "Penguin Random House" },
+                    new Publisher() { Name = "HarperCollins" },
+                    new Publisher() { Name = "Simon & Schuster" },
+                    new Publisher() { Name = "Hachette Book Group" },
+                    new Publisher() { Name = "Macmillan Publishers" }
+                });
+
+                context.SaveChanges();
+            }
+
+            // Seed Authors
+            if (!context.Authors.Any())
+            {
+                context.Authors.AddRange(new List<Author>()
+                {
+                    new Author()
+                    {
+                        FullName = "Isaac Asimov",
+                        Biography = "American writer and biochemist best known for his science fiction novels and popular science books. Author of the Foundation and Robot series."
+                    },
+                    new Author()
+                    {
+                        FullName = "J.K. Rowling",
+                        Biography = "British author best known for creating the Harry Potter series, one of the most successful fantasy franchises in history."
+                    },
+                    new Author()
+                    {
+                        FullName = "Agatha Christie",
+                        Biography = "British writer widely regarded as the Queen of Mystery. Creator of the famous detectives Hercule Poirot and Miss Marple."
+                    },
+                    new Author()
+                    {
+                        FullName = "Stephen King",
+                        Biography = "American author renowned for his horror, suspense, and supernatural fiction. Writer of classics such as The Shining, It, and Misery."
+                    },
+                    new Author()
+                    {
+                        FullName = "Jane Austen",
+                        Biography = "English novelist celebrated for her timeless works on society and relationships, including Pride and Prejudice and Emma."
+                    }
+                });
+
+                context.SaveChanges();
+            }
+
+            // Seed Books
+            if (!context.Books.Any())
+            {
+                context.Books.AddRange(
                     new Book
                     {
                         Title = "Foundation",
@@ -73,20 +131,21 @@ namespace eBooks.Data
                         CategoryId = 1,
                         PublisherId = 1
                     });
-                    context.SaveChanges();
-                }
 
-                //Seed Authors & Books
-                if (!context.Author_Books.Any())
-                {
-                    context.Author_Books.AddRange(
+                context.SaveChanges();
+            }
+
+            // Seed Authors & Books
+            if (!context.Author_Books.Any())
+            {
+                context.Author_Books.AddRange(
                     new Author_Book
                     {
                         AuthorId = 1, // Isaac Asimov
-                        BookId = 1  // Foundation
+                        BookId = 1    // Foundation
                     });
-                    context.SaveChanges();
-                }
+
+                context.SaveChanges();
             }
         }
     }

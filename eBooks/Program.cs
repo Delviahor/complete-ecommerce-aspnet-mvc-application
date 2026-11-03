@@ -24,6 +24,12 @@ builder.Services.AddScoped<IAuthorsService, AuthorsService>();
 builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IPublishersService, PublishersService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IAddressesService, AddressesService>();
+builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.AddScoped<IUserProfilesService, UserProfilesService>();
+builder.Services.AddScoped<IBookReviewsService, BookReviewsService>();
+builder.Services.AddScoped<IProfilePictureService, ProfilePictureService>();
 
 var app = builder.Build();
 

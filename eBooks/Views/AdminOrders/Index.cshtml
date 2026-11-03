@@ -1,0 +1,139 @@
+﻿@model IEnumerable<eBooks.Models.Order>
+
+@using eBooks.Data.Enums
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Manage Orders";
+    var culture = new CultureInfo("es-MX");
+}
+
+<div class="container my-5">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1>MANAGE ORDERS</h1>
+            <p class="text-muted mb-0">
+                Review and manage customer orders.
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            BACK TO ADMIN PANEL
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            There are no orders yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle orders-table">
+
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        decimal orderTotal = order.Items.Sum(
+                        item => item.UnitPrice * item.Quantity
+                        );
+
+                        <tr>
+                            <td>
+                                <strong>#@order.OrderId</strong>
+                            </td>
+
+                            <td>
+                                @order.User.Email
+                            </td>
+
+                            <td>
+                                @(order.CreatedAtUtc.ToLocalTime()
+                                                        .ToString("dd/MM/yyyy HH:mm"))
+                    </td>
+
+                            <td>
+                                @order.Items.Sum(item => item.Quantity)
+                            </td>
+
+                            <td>
+                                @orderTotal.ToString("C", culture)
+                            </td>
+
+                            <td>
+                        @switch (order.Status)
+                                {
+                                    case Order_Status.Pending:
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        break;
+
+                                    case Order_Status.Accepted:
+                                        <span class="badge bg-info text-dark">Accepted</span>
+                                        break;
+
+                                    case Order_Status.Preparing:
+                                        <span class="badge bg-primary">Preparing</span>
+                                        break;
+
+                                    case Order_Status.Shipped:
+                                        <span class="badge bg-secondary">Shipped</span>
+                                        break;
+
+                                    case Order_Status.Delivered:
+                                        <span class="badge bg-success">Delivered</span>
+                                        break;
+
+                                    case Order_Status.Cancelled:
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        break;
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-controller="AdminOrders"
+                                   asp-action="Details"
+                                   asp-route-id="@order.OrderId"
+                                   class="btn btn-outline-primary btn-sm">
+                                    MANAGE
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    }
+
+</div>

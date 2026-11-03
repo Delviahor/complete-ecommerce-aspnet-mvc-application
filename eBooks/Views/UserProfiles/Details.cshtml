@@ -1,0 +1,295 @@
+﻿@model eBooks.ViewModels.UserProfiles.UserProfileViewModel
+
+@{
+    ViewData["Title"] = $"{Model.UserName}'s Profile";
+}
+
+<style>
+    .user-profile {
+        max-width: 1100px;
+        margin: 35px auto;
+        color: #252b34;
+        font-family: Arial, sans-serif;
+    }
+
+    .profile-header {
+        background: #263f62;
+        color: white;
+        padding: 18px 24px;
+        border: 1px solid #172d49;
+    }
+
+        .profile-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .profile-header p {
+            margin: 5px 0 0;
+            color: #d3dfed;
+            font-size: .85rem;
+        }
+        
+    .profile-sidebar, .profile-main {
+        background: #E5E7EB;
+        border: 2px solid #a77bff;
+        box-shadow: 4px 4px 0 #09051e, 0 0 10px #a77bff55;
+        padding: 18px;
+        height: 100%;
+    }
+
+    .profile-picture {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border: 1px solid #8999aa;
+        padding: 4px;
+        background: #fff;
+    }
+
+    .profile-picture-placeholder {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: #dce5ef;
+        border: 1px solid #8999aa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #526985;
+        font-size: 65px;
+    }
+
+    .profile-username {
+        font-size: 1.35rem;
+        font-weight: bold;
+        color: #263F62;
+        margin-top: 15px;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-member-date {
+        font-size: .82rem;
+        color: #777;
+    }
+
+    .profile-panel {
+        border: 2px solid #8b75bd;
+        margin-bottom: 18px;
+        background: #F1F2F4;
+        box-shadow: 3px 3px 0 #241451;
+        transition: box-shadow 180ms ease, transform 180ms ease;
+    }
+
+        .profile-panel:hover {
+            box-shadow: 4px 4px 0 #241451, 0 0 10px #a77bff66;
+            transform: translateY(-2px);
+        }
+
+    .profile-panel-title {
+        background: #263F62;
+        color: #D8E1EA;
+        border-bottom: 1px solid #b8c5d3;
+        padding: 9px 13px;
+        font-weight: bold;
+        font-size: .95rem;
+    }
+
+    .profile-panel-body {
+        padding: 15px;
+        line-height: 1.6;
+    }
+
+    /* Texto de About Me */
+    .profile-sidebar .profile-panel-body {
+        color: #000000;
+    }
+
+    /* Texto de información personal y otras secciones */
+    .profile-main .profile-panel-body {
+        color: #000000;
+    }
+
+    /* Descripción de About Me */
+    .profile-description {
+        color: #000000;
+    }
+
+    .profile-stat {
+        display: inline-block;
+        min-width: 110px;
+        text-align: center;
+        background: #edf2f7;
+        border: 1px solid #c7d2df;
+        padding: 12px;
+    }
+
+        .profile-stat strong {
+            display: block;
+            font-size: 1.8rem;
+            color: #294d75;
+        }
+
+        .profile-stat span {
+            font-size: .8rem;
+            color: #626e7b;
+        }
+
+    .profile-button {
+        display: inline-block;
+        background: #e5ebf2;
+        border: 1px solid #9eacbd;
+        border-bottom: 2px solid #8292a5;
+        padding: 7px 13px;
+        color: #294d75;
+        text-decoration: none;
+        font-size: .85rem;
+        font-weight: bold;
+    }
+
+        .profile-button:hover {
+            background: #d2deeb;
+            color: #172d49;
+        }
+
+    .profile-description {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+
+    @@media (max-width: 767px) {
+        .user-profile {
+            margin: 18px 10px;
+        }
+
+        .profile-sidebar {
+            margin-bottom: 18px;
+        }
+
+        .profile-picture,
+        .profile-picture-placeholder {
+            max-width: 220px;
+        }
+    }
+
+
+
+</style>
+
+<div class="container user-profile">
+
+    <div class="profile-header mb-3">
+        <h2>Member Profile</h2>
+        <p>eBooks Community / User Information</p>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Left column: User information -->
+        <div class="col-md-4">
+
+            <div class="profile-sidebar">
+
+                @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                {
+                    <img src="@Model.ProfilePicture"
+                         alt="Profile picture"
+                         class="profile-picture" />
+                }
+                else
+                {
+                    <div class="profile-picture-placeholder">
+                        <span>?</span>
+                    </div>
+                }
+
+                <h3 class="profile-username">
+                    @Model.UserName
+                </h3>
+
+                <p class="profile-member-date">
+                    Member since @Model.CreatedAtUtc.ToString("MMMM yyyy")
+                </p>
+
+                @if (User.Identity?.IsAuthenticated == true &&
+                                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.UserId)
+                {
+                    <a asp-controller="UserProfiles"
+                       asp-action="Edit"
+                       class="profile-button w-100 text-center">
+                        Edit Profile
+                    </a>
+                }
+
+                <hr />
+
+                <div class="profile-panel">
+                    <div class="profile-panel-title">
+                        About Me
+                    </div>
+
+                    <div class="profile-panel-body">
+                        <p class="profile-description">
+                            @(string.IsNullOrWhiteSpace(Model.AboutMe) 
+                            ? "This user has not added a description yet."
+                            : Model.AboutMe)
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right column: Activity -->
+        <div class="col-md-8">
+
+            <div class="profile-main">
+
+                <div class="profile-panel">
+                    <div class="profile-panel-title">
+                        Personal Information
+                    </div>
+
+                    <div class="profile-panel-body">
+                        <p>
+                            <strong>Username:</strong>
+                            @Model.UserName
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Member since:</strong>
+                            @Model.CreatedAtUtc.ToString("MMMM dd, yyyy")
+                        </p>
+                    </div>
+                </div>
+
+                <div class="profile-panel">
+                    <div class="profile-panel-title">
+                        Reading Activity
+                    </div>
+
+                    <div class="profile-panel-body">
+                        <div class="profile-stat">
+                            <strong>@Model.PublishedReviewsCount</strong>
+                            <span>Published Reviews</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-panel">
+                    <div class="profile-panel-title">
+                        Recent Activity
+                    </div>
+
+                    <div class="profile-panel-body">
+                        <p class="text-muted mb-0">
+                            No recent activity to display.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

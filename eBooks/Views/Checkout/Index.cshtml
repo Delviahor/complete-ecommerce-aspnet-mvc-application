@@ -1,0 +1,201 @@
+﻿```cshtml
+@model eBooks.ViewModels.Checkout.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="container my-5">
+
+    <h1 class="mb-2">CHECKOUT</h1>
+    <p class="text-muted mb-5">
+        Review your order and select a shipping address.
+    </p>
+
+    <div class="row g-4">
+
+        <!-- Order Summary -->
+        <div class="col-lg-7">
+
+            <section class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">ORDER SUMMARY</h4>
+                </div>
+
+                <div class="card-body">
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="d-flex gap-3 border-bottom py-3">
+
+                            @if (!string.IsNullOrWhiteSpace(item.CoverURLPicture))
+                            {
+                                <img src="@item.CoverURLPicture"
+                                     alt="@item.BookTitle"
+                                     style="width: 90px; height: 120px; object-fit: cover;" />
+                            }
+
+                            <div class="flex-grow-1">
+                                <h5>@item.BookTitle</h5>
+
+                                <p class="mb-1">
+                                    Quantity: @item.Quantity
+                                </p>
+
+                                <p class="mb-1">
+                                    Unit price: @item.UnitPrice.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                                </p>
+
+                                <strong>
+                                    Subtotal:
+                                    @item.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                                </strong>
+
+                                @if (!item.IsAvailable)
+                                {
+                                    <p class="text-danger mt-2 mb-0">
+                                        This book is currently unavailable
+                                        or has insufficient stock.
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <h5>TOTAL</h5>
+
+                        <h5>
+                            @Model.Total.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                        </h5>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="col-lg-5">
+
+            <section class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">SHIPPING ADDRESS</h4>
+                </div>
+
+                <div class="card-body">
+
+                    @if (!Model.Addresses.Any())
+                    {
+                        <p class="text-muted">
+                            You don't have any registered addresses.
+                        </p>
+
+                        <a asp-controller="Addresses"
+                           asp-action="Create"
+                           class="btn btn-primary">
+                            ADD ADDRESS
+                        </a>
+                    }
+                    else
+                    {
+                        <form method="post"
+                              asp-controller="Checkout"
+                              asp-action="Confirm">
+
+                            @Html.AntiForgeryToken()
+
+                            <div asp-validation-for="SelectedAddressId"
+                                 class="text-danger mb-3"></div>
+
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <div class="form-check border rounded p-3 mb-3">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="SelectedAddressId"
+                                           id="address-@address.AddressId"
+                                           value="@address.AddressId"
+                                           required />
+
+                                    <label class="form-check-label"
+                                           for="address-@address.AddressId">
+
+                                        <strong>@address.RecipientName</strong>
+
+                                        <p class="mb-1">
+                                            @address.Street @address.Number
+                                        </p>
+
+                                        <p class="mb-1">
+                                            @address.Neighborhood,
+                                            @address.City,
+                                            @address.State
+                                        </p>
+
+                                        <p class="mb-1">
+                                            CP: @address.PostalCode
+                                        </p>
+
+                                        <p class="mb-0">
+                                            Phone: @address.Phone
+                                        </p>
+
+                                        @if (!string.IsNullOrWhiteSpace(address.References))
+                                        {
+                                            <p class="mb-0">
+                                                References: @address.References
+                                            </p>
+                                        }
+
+                                    </label>
+                                </div>
+                            }
+
+                            <a asp-controller="Addresses"
+                               asp-action="Create"
+                               class="btn btn-outline-secondary w-100 mb-3">
+                                ADD ANOTHER ADDRESS
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary w-100"
+                                    disabled="@Model.HasUnavailableItems">
+                                CONFIRM ORDER
+                            </button>
+
+                            @if (Model.HasUnavailableItems)
+                            {
+                                <p class="text-danger mt-3 mb-0">
+                                    Please resolve unavailable items before continuing.
+                                </p>
+                            }
+
+                        </form>
+                    }
+
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Cart"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            BACK TO CART
+        </a>
+    </div>
+
+</div>
+```

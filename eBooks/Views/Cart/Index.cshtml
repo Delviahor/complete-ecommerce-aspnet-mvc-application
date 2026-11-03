@@ -1,0 +1,486 @@
+﻿@model eBooks.Models.Cart
+@using eBooks.Data.Enums
+
+@{
+    ViewData["Title"] = "My Shopping Cart";
+    decimal total = 0;
+    bool hasUnavailableItems = false;
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">MY SHOPPING CART</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model.Items == null || !Model.Items.Any())
+    {
+        <div class="alert alert-info">
+            Your shopping cart is empty.
+        </div>
+
+        <a asp-controller="Catalog"
+           asp-action="Index"
+           class="btn btn-primary">
+            EXPLORE CATALOG
+        </a>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Availability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        bool available =
+                        item.Book.Status == Book_Status.Published
+                        && item.Book.InStock > 0;
+
+                        bool quantityExceedsStock =
+                        available && item.Quantity > item.Book.InStock;
+
+                        if (!available || quantityExceedsStock)
+                        {
+                            hasUnavailableItems = true;
+                        }
+
+                        decimal subtotal = item.Book.Price * item.Quantity;
+                        total += subtotal;
+
+                        <tr class="cart-item-row"
+                            data-stock="@item.Book.InStock"
+                            data-available="@available.ToString().ToLowerInvariant()">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    @if (!string.IsNullOrWhiteSpace(
+                                                                item.Book.CoverURLPicture))
+                                    {
+                                        <img src="@item.Book.CoverURLPicture"
+                                             alt="@item.Book.Title"
+                                             style="width: 65px; height: 90px; object-fit: cover;" />
+                                    }
+
+                                    <div>
+                                        <strong>@item.Book.Title</strong>
+                                        <div>
+                                            <a asp-controller="Catalog"
+                                               asp-action="Details"
+                                               asp-route-id="@item.Book.BookId">
+                                                View details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@item.Book.Price.ToString("C")</td>
+
+                            
+                            <td>
+                                <form class="quantity-form d-flex align-items-center gap-2"
+                                      asp-controller="Cart"
+                                      asp-action="UpdateQuantityAjax"
+                                      method="post"
+                                      data-item-id="@item.CartItemId">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="cartItemId"
+                                           value="@item.CartItemId" />
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary quantity-minus"
+                                            aria-label="Decrease quantity">
+                                        −
+                                    </button>
+
+                                    <input type="number"
+                                           name="quantity"
+                                           value="@item.Quantity"
+                                           min="1"
+                                           max="10"
+                                           class="form-control quantity-input"
+                                           style="width: 75px;"
+                                           required />
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary quantity-plus"
+                                            aria-label="Increase quantity">
+                                        +
+                                    </button>
+                                </form>
+
+                                <div class="quantity-error text-danger small mt-1"
+                                     role="status"></div>
+
+                                <small class="stock-warning text-danger"
+                                       style="display: @(quantityExceedsStock ? "block" : "none")">
+                                    Reduce to @item.Book.InStock or less.
+                                </small>
+                            </td>
+
+
+                            <td class="item-subtotal"
+                                data-price="@item.Book.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                                @subtotal.ToString("C")
+                            </td>
+
+                            <td>
+                                <span class="availability-status">
+                                    @if (!available)
+                                    {
+                                        <span class="text-danger fw-bold">Unavailable</span>
+                                    }
+                                    else if (quantityExceedsStock)
+                                    {
+                                        <span class="text-danger fw-bold">Insufficient stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">Available</span>
+                                    }
+                                </span>
+                            </td>
+
+                            <td>
+                                <form asp-controller="Cart"
+                                      asp-action="Remove"
+                                      method="post">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="cartItemId"
+                                           value="@item.CartItemId" />
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex flex-column align-items-end mt-4">
+
+            <h4>
+                Indicative total:
+                <span id="cart-total"
+                      data-currency="MXN">@total.ToString("C")</span>
+            </h4>
+
+            <p class="text-muted">
+                The final order will be validated against current stock and prices.
+            </p>
+
+            @if (hasUnavailableItems)
+            {
+                <div class="alert alert-warning w-100 text-center">
+                    Some items are unavailable or exceed current stock.
+                    Please review your cart before proceeding.
+                </div>
+            }
+            else
+            {
+                <a asp-controller="Checkout"
+                   asp-action="Index"
+                   id="checkout-button"
+                   class="btn btn-primary mb-2 @(hasUnavailableItems ? "disabled" : "")"
+                   aria-disabled="@hasUnavailableItems"
+                   tabindex="@(hasUnavailableItems ? "-1" : "0")">
+                    PROCEED TO CHECKOUT →
+                </a>
+
+                <div id="checkout-warning"
+                     class="alert alert-warning text-center w-100"
+                     style="display: @(hasUnavailableItems ? "block" : "none")">
+                    Please review unavailable items before proceeding.
+                </div>
+            }
+
+            <a asp-controller="Catalog"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                CONTINUE SHOPPING
+            </a>
+
+        </div>
+    }
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const forms = document.querySelectorAll(".quantity-form");
+            const totalElement = document.getElementById("cart-total");
+            const checkoutButton = document.getElementById("checkout-button");
+            const checkoutWarning = document.getElementById("checkout-warning");
+
+            const formatter = new Intl.NumberFormat("es-MX", {
+                style: "currency",
+                currency: totalElement?.dataset.currency || "MXN"
+            });
+
+            function updateTotals() {
+                let total = 0;
+
+                forms.forEach(form => {
+                    const input = form.querySelector(".quantity-input");
+                    const row = form.closest("tr");
+                    const subtotalElement = row.querySelector(".item-subtotal");
+
+                    const price = Number(subtotalElement.dataset.price);
+                    const quantity = Number(input.value);
+                    const subtotal = price * (Number.isFinite(quantity) ? quantity : 0);
+
+                    subtotalElement.textContent = formatter.format(subtotal);
+                    total += subtotal;
+                });
+
+                if (totalElement) {
+                    totalElement.textContent = formatter.format(total);
+                }
+            }
+
+            function updateCheckoutState() {
+                let hasInvalidItems = false;
+                let hasPendingUpdates = false;
+
+                forms.forEach(form => {
+                    const row = form.closest("tr");
+                    const input = form.querySelector(".quantity-input");
+
+                    const quantity = Number(input.value);
+                    const stock = Number(row.dataset.stock);
+                    const available = row.dataset.available === "true";
+                    const pending = form.dataset.pending === "true";
+
+                    const validQuantity =
+                        Number.isInteger(quantity) &&
+                        quantity >= 1 &&
+                        quantity <= 10;
+
+                    const exceedsStock = available && quantity > stock;
+                    const unavailable = !available;
+
+                    if (!validQuantity || exceedsStock || unavailable) {
+                        hasInvalidItems = true;
+                    }
+
+                    if (pending) {
+                        hasPendingUpdates = true;
+                    }
+
+                    const statusElement = row.querySelector(".availability-status");
+                    const warningElement =
+                        form.parentElement.querySelector(".stock-warning");
+
+                    if (unavailable) {
+                        statusElement.innerHTML =
+                            '<span class="text-danger fw-bold">Unavailable</span>';
+                    }
+                    else if (!validQuantity) {
+                        statusElement.innerHTML =
+                            '<span class="text-danger fw-bold">Invalid quantity</span>';
+                    }
+                    else if (exceedsStock) {
+                        statusElement.innerHTML =
+                            '<span class="text-danger fw-bold">Insufficient stock</span>';
+                    }
+                    else {
+                        statusElement.innerHTML =
+                            '<span class="text-success">Available</span>';
+                    }
+
+                    if (warningElement) {
+                        warningElement.style.display =
+                            (!validQuantity || exceedsStock || unavailable)
+                                ? "block"
+                                : "none";
+
+                        if (unavailable) {
+                            warningElement.textContent =
+                                "This book is currently unavailable.";
+                        }
+                        else if (!validQuantity) {
+                            warningElement.textContent =
+                                "Enter a quantity between 1 and 10.";
+                        }
+                        else if (exceedsStock) {
+                            warningElement.textContent =
+                                `Reduce to ${stock} or less.`;
+                        }
+                    }
+                });
+
+                const checkoutDisabled = hasInvalidItems || hasPendingUpdates;
+
+                if (checkoutButton) {
+                    checkoutButton.classList.toggle("disabled", checkoutDisabled);
+                    checkoutButton.setAttribute(
+                        "aria-disabled",
+                        String(checkoutDisabled)
+                    );
+                    checkoutButton.tabIndex = checkoutDisabled ? -1 : 0;
+                }
+
+                if (checkoutWarning) {
+                    checkoutWarning.style.display =
+                        hasInvalidItems ? "block" : "none";
+                }
+            }
+
+            checkoutButton?.addEventListener("click", event => {
+                if (checkoutButton.getAttribute("aria-disabled") === "true") {
+                    event.preventDefault();
+                }
+            });
+
+            forms.forEach(form => {
+                const input = form.querySelector(".quantity-input");
+                const minus = form.querySelector(".quantity-minus");
+                const plus = form.querySelector(".quantity-plus");
+                const errorElement =
+                    form.parentElement.querySelector(".quantity-error");
+
+                let savedQuantity = Number(input.value);
+                let saveTimer;
+
+                form.dataset.pending = "false";
+
+                function changeQuantity(amount) {
+                    if (input.disabled) return;
+
+                    const current = Number(input.value) || 1;
+                    const row = form.closest("tr");
+
+                    const stock = Number(row.dataset.stock);
+                    const available = row.dataset.available === "true";
+
+                    const maximum = available
+                        ? Math.min(10, stock)
+                        : 10;
+
+                    const next = Math.max(1, Math.min(maximum, current + amount));
+
+                    input.value = next;
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                }
+
+                minus?.addEventListener("click", () => changeQuantity(-1));
+                plus?.addEventListener("click", () => changeQuantity(1));
+
+                input.addEventListener("input", () => {
+                    if (errorElement) {
+                        errorElement.textContent = "";
+                    }
+
+                    clearTimeout(saveTimer);
+
+                    updateTotals();
+
+                    const quantity = Number(input.value);
+                    const row = form.closest("tr");
+
+                    const stock = Number(row.dataset.stock);
+                    const available = row.dataset.available === "true";
+
+                    const validQuantity =
+                        Number.isInteger(quantity) &&
+                        quantity >= 1 &&
+                        quantity <= 10;
+
+                    const exceedsStock = available && quantity > stock;
+
+                    if (!validQuantity || exceedsStock || !available) {
+                        form.dataset.pending = "false";
+                        updateCheckoutState();
+                        return;
+                    }
+
+                    form.dataset.pending = "true";
+                    updateCheckoutState();
+
+                    saveTimer = setTimeout(async () => {
+                        const controls = [input, minus, plus].filter(Boolean);
+
+                        controls.forEach(control => {
+                            control.disabled = true;
+                        });
+
+                        try {
+                            const formData = new FormData(form);
+                            formData.set("quantity", String(quantity));
+
+                            const response = await fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest"
+                                }
+                            });
+
+                            const result = await response.json();
+
+                            if (!response.ok || !result.success) {
+                                throw new Error(
+                                    result.message || "Could not update the quantity."
+                                );
+                            }
+
+                            savedQuantity = quantity;
+
+                        } catch (error) {
+                            if (errorElement) {
+                                errorElement.textContent = error.message;
+                            }
+
+                            input.value = savedQuantity;
+                            updateTotals();
+
+                        } finally {
+                            controls.forEach(control => {
+                                control.disabled = false;
+                            });
+
+                            form.dataset.pending = "false";
+                            updateCheckoutState();
+                        }
+                    }, 500);
+                });
+            });
+
+            updateTotals();
+            updateCheckoutState();
+        });
+
+    </script>
+
+
+</div>
+

@@ -28,6 +28,8 @@
                 </span>
             </div>
 
+            
+
             <a class="brand-logo"
                asp-controller="Home"
                asp-action="Index">
@@ -45,6 +47,50 @@
                 <span>✦ AUTHORS • STORIES • KNOWLEDGE ✦</span>
                 <span>★ BEST VIEWED WITH A LOVE FOR READING ★</span>
             </div>
+
+            <div class="account-navigation">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Account"
+                       asp-action="Index">
+                        👤 MY ACCOUNT
+                    </a>
+
+                    <a asp-controller="Cart"
+                       asp-action="Index">
+                        🛒 MY CART
+                    </a>
+
+                    <a asp-controller="Orders"
+                       asp-action="Index">
+                        📦 MY ORDERS
+                    </a>
+
+                    <form asp-area="Identity"
+                          asp-page="/Account/Logout"
+                          asp-route-returnUrl="/"
+                          method="post">
+
+                        <button type="submit">
+                            🚪 LOGOUT
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <a asp-area="Identity"
+                       asp-page="/Account/Login">
+                        🔑 LOGIN
+                    </a>
+
+                    <a asp-area="Identity"
+                       asp-page="/Account/Register">
+                        ✍ REGISTER
+                    </a>
+                }
+            </div>
+
         </header>
 
         <nav class="retro-nav navbar navbar-expand-lg">
@@ -71,36 +117,37 @@
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               asp-controller="Books"
+                               asp-controller="Catalog"
                                asp-action="Index">
-                                📖 BOOKS
+                                📚 CATALOG
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Authors"
-                               asp-action="Index">
-                                ✍️ AUTHORS
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Categories"
-                               asp-action="Index">
-                                💿 CATEGORIES
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Publishers"
-                               asp-action="Index">
-                                🏢 PUBLISHERS
-                            </a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="UserProfiles"
+                                   asp-action="Details"
+                                   asp-route-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
+                                    My Profile
+                                </a>
+                            </li>
+                        }
                     </ul>
+
+
+
+                    <div class="ms-lg-auto mt-3 mt-lg-0">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="retro-button text-decoration-none"
+                               asp-controller="Admin"
+                               asp-action="Index">
+                                🛠 ADMINISTRAR SITIO
+                            </a>
+                        }
+                    </div>
 
                     <form class="retro-search"
                           asp-controller="Books"

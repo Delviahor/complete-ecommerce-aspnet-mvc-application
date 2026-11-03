@@ -1,0 +1,124 @@
+﻿@model eBooks.ViewModels.CreateAddressViewModel
+
+@{
+    ViewData["Title"] = "Add Address";
+}
+
+<div class="container mt-4 mb-5">
+    <h1>ADD A NEW ADDRESS</h1>
+    <p class="text-muted">
+        Enter the delivery details you want to use for your orders.
+    </p>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <form asp-controller="Addresses"
+                  asp-action="Create"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="RecipientName" class="form-label">
+                        Recipient Name
+                    </label>
+                    <input asp-for="RecipientName" class="form-control" />
+                    <span asp-validation-for="RecipientName"
+                          class="text-danger"></span>
+                </div>
+
+                <label asp-for="Phone" class="form-label">Phone Number</label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label asp-for="Street" class="form-label">
+                            Street
+                        </label>
+                        <input asp-for="Street" class="form-control" />
+                        <span asp-validation-for="Street"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Number" class="form-label">
+                            Number
+                        </label>
+                        <input asp-for="Number" class="form-control" />
+                        <span asp-validation-for="Number"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Neighborhood" class="form-label">
+                        Neighborhood
+                    </label>
+                    <input asp-for="Neighborhood" class="form-control" />
+                    <span asp-validation-for="Neighborhood"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="City" class="form-label">
+                            City
+                        </label>
+                        <input asp-for="City" class="form-control" />
+                        <span asp-validation-for="City"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="State" class="form-label">
+                            State
+                        </label>
+                        <input asp-for="State" class="form-control" />
+                        <span asp-validation-for="State"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PostalCode" class="form-label">
+                        Postal Code
+                    </label>
+                    <input asp-for="PostalCode" class="form-control" />
+                    <span asp-validation-for="PostalCode"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="References" class="form-label">
+                        References (Optional)
+                    </label>
+                    <textarea asp-for="References"
+                              class="form-control"
+                              rows="3"></textarea>
+                    <span asp-validation-for="References"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        SAVE ADDRESS
+                    </button>
+
+                    <a asp-controller="Addresses"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        CANCEL
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

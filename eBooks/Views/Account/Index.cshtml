@@ -1,0 +1,85 @@
+﻿
+@model eBooks.ViewModels.Account.AccountViewModel
+
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<div class="container my-5">
+
+    <div class="mb-5">
+        <h1>MY ACCOUNT</h1>
+        <p class="text-muted">
+            Manage your personal information and shopping activity.
+        </p>
+    </div>
+
+    <!-- Account Information -->
+    <section class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">ACCOUNT INFORMATION</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="mb-3">
+                <strong>Username</strong>
+                <p class="mb-0">@Model.UserName</p>
+            </div>
+
+            <div class="mb-3">
+                <strong>Email address</strong>
+                <p class="mb-0">@Model.Email</p>
+            </div>
+
+            <div>
+                <strong>Phone number</strong>
+                <p class="mb-0">
+                    @(string.IsNullOrWhiteSpace(Model.PhoneNumber)
+                                        ? "Not registered"
+                                        : Model.PhoneNumber)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Sections -->
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4>MY ADDRESSES</h4>
+
+                    <p class="text-muted">
+                        Manage your shipping addresses.
+                    </p>
+
+                    <a asp-controller="Addresses"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        MANAGE ADDRESSES
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4>MY ORDERS</h4>
+
+                    <p class="text-muted">
+                        View your purchase history and order status.
+                    </p>
+
+                    <span class="badge bg-secondary">
+                        COMING SOON
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+```

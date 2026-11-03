@@ -57,7 +57,25 @@ namespace eBooks.Data.Services
             .Where(b =>
                 b.Status == Book_Status.Published ||
                 b.Status == Book_Status.OutOfStock)
+            .Include(b => b.Category)
+            .Include(b => b.Publisher)
+            .Include(b => b.AuthorBooks)
+                .ThenInclude(ab => ab.Author)
+            .OrderBy(b => b.Title)
             .ToListAsync();
+        }
+
+        public async Task<Book?> GetPublishedByIdAsync(int id)
+        {
+            return await _context.Books
+            .Include(b => b.Category)
+            .Include(b => b.Publisher)
+            .Include(b => b.AuthorBooks)
+            .ThenInclude(ab => ab.Author)
+            .FirstOrDefaultAsync(b =>
+                b.BookId == id &&
+                (b.Status == Book_Status.Published ||
+                 b.Status == Book_Status.OutOfStock));
         }
 
         public async Task UpdateAsync(int id, Book book, List<int> authorIds)

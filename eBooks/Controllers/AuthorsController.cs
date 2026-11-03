@@ -1,10 +1,12 @@
 ﻿using eBooks.Data.Services;
 using eBooks.Models;
 using eBooks.ViewModels.Authors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eBooks.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AuthorsController : Controller
     {
         private readonly IAuthorsService _authorsService;

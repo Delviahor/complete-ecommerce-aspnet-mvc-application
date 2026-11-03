@@ -1,0 +1,118 @@
+﻿@model List<eBooks.Models.Address>
+
+@{
+    ViewData["Title"] = "My Addresses";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>MY ADDRESSES</h1>
+            <p class="text-muted">
+                Manage the addresses used for your orders.
+            </p>
+        </div>
+
+        <a asp-controller="Addresses"
+           asp-action="Create"
+           class="btn btn-primary">
+            + ADD ADDRESS
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            You haven't registered any addresses yet.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var address in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @address.RecipientName
+                            </h5>
+
+                            <p class="mb-1">
+                                <strong>Number:</strong>
+                                @address.Number
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Street:</strong>
+                                @address.Street, @address.Number
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Neighborhood:</strong>
+                                @address.Neighborhood
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>City:</strong>
+                                @address.City
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>State:</strong>
+                                @address.State
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Postal Code:</strong>
+                                @address.PostalCode
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Phone:</strong>
+                                @address.Phone
+                            </p>
+
+                            @if (!string.IsNullOrWhiteSpace(address.References))
+                            {
+                                <p class="mb-1">
+                                    <strong>References:</strong>
+                                    @address.References
+                                </p>
+                            }
+                        </div>
+
+                        <div class="card-footer bg-transparent d-flex gap-2">
+                            <a asp-controller="Addresses"
+                               asp-action="Edit"
+                               asp-route-id="@address.AddressId"
+                               class="btn btn-outline-primary btn-sm">
+                                EDIT
+                            </a>
+
+                            <form asp-controller="Addresses"
+                                  asp-action="Delete"
+                                  asp-route-id="@address.AddressId"
+                                  method="post"
+                                  onsubmit="return confirm('Are you sure you want to delete this address?');">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm">
+                                    DELETE
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -15,5 +15,6 @@ namespace eBooks.Data.Services
         Task UpdateAsync(int id, Book book, List<int> authorIds);
 
         Task ChangeStatusAsync(int id, Book_Status status);
+        Task<Book?> GetPublishedByIdAsync(int id);
     }
 }

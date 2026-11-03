@@ -1,10 +1,12 @@
 ﻿using eBooks.Data.Services;
 using eBooks.Models;
 using eBooks.ViewModels.Categories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eBooks.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ICategoriesService _categoriesService;

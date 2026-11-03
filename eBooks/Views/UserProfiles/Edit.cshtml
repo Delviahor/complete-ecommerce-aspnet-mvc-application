@@ -1,0 +1,33 @@
+﻿@model eBooks.ViewModels.UserProfiles.EditUserProfileViewModel
+
+<form asp-action="Edit"
+      method="post"
+      enctype="multipart/form-data">
+
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label asp-for="AboutMe"></label>
+        <textarea asp-for="AboutMe"></textarea>
+        <span asp-validation-for="AboutMe"></span>
+    </div>
+
+    <div>
+        <label asp-for="ProfilePictureFile">Profile picture</label>
+
+        @if (!string.IsNullOrEmpty(Model.CurrentProfilePicture))
+        {
+            <img src="@Model.CurrentProfilePicture"
+                 alt="Current profile picture"
+                 width="120" />
+        }
+
+        <input asp-for="ProfilePictureFile"
+               type="file"
+               accept=".jpg,.jpeg,.png,.webp" />
+
+        <span asp-validation-for="ProfilePictureFile"></span>
+    </div>
+
+    <button type="submit">Save changes</button>
+</form>

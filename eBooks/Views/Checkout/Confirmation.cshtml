@@ -1,0 +1,132 @@
+﻿@model eBooks.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <h1>ORDER CONFIRMED!</h1>
+
+        <p class="lead">
+            Your order has been successfully created.
+        </p>
+
+        <h4>Order #@Model.OrderId</h4>
+
+        <span class="badge bg-warning text-dark">
+            @Model.Status
+        </span>
+
+    </div>
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h5>ORDER DETAILS</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Order date:</strong>
+                @Model.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm") UTC
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                @Model.Status
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h5>SHIPPING ADDRESS</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p><strong>@Model.RecipientName</strong></p>
+            <p>@Model.Phone</p>
+            <p>@Model.Street, @Model.Number</p>
+            <p>@Model.Neighborhood</p>
+            <p>@Model.City, @Model.State</p>
+            <p>Postal Code: @Model.PostalCode</p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.References))
+            {
+                <p>References: @Model.References</p>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h5>ORDER ITEMS</h5>
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var item in Model.Items)
+            {
+                <div class="d-flex justify-content-between border-bottom py-3">
+
+                    <div>
+                        <strong>@item.BookTitle</strong>
+
+                        <p class="mb-0">
+                            Quantity: @item.Quantity
+                        </p>
+
+                        <small>
+                            Unit price:
+                            @item.UnitPrice.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                        </small>
+                    </div>
+
+                    <div class="text-end">
+                        <strong>
+                            @((item.UnitPrice * item.Quantity).ToString("C", new System.Globalization.CultureInfo("es-MX")))
+                        </strong>
+                    </div>
+
+                </div>
+            }
+
+            <div class="text-end mt-4">
+
+                @{
+                    var orderTotal = Model.Items.Sum(item =>
+                    item.UnitPrice * item.Quantity);
+                }
+
+                <h4>
+                    TOTAL: @orderTotal.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                </h4>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="text-center">
+
+        <a asp-controller="Catalog"
+           asp-action="Index"
+           class="btn btn-primary">
+            CONTINUE SHOPPING
+        </a>
+
+    </div>
+
+</div>

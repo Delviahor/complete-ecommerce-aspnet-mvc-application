@@ -5,7 +5,15 @@
 }
 
 <div class="books-page">
-    <h2 class="retro-heading">📚 Books.exe</h2>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <h2 class="retro-heading mb-0">📚 Books.exe</h2>
+
+        <a asp-controller="Books"
+           asp-action="Create"
+           class="btn btn-primary">
+            ➕ ADD NEW BOOK
+        </a>
+    </div>
 
     <div class="table-container">
         <table class="books-table books-catalog-table">

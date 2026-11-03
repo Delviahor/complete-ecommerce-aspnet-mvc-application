@@ -11,6 +11,7 @@ namespace eBooks.Data
         public static async Task SeedAsync(
             IApplicationBuilder applicationBuilder)
         {
+
             using var serviceScope =
                 applicationBuilder.ApplicationServices.CreateScope();
 
@@ -46,6 +47,7 @@ namespace eBooks.Data
                     }
                 }
             }
+
 
             // Seed Categories
             if (!context.Categories.Any())

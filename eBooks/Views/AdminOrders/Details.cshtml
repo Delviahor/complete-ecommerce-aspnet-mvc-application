@@ -1,0 +1,315 @@
+﻿@model eBooks.Models.Order
+
+@using eBooks.Data.Enums
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Manage Order";
+    var culture = new CultureInfo("es-MX");
+
+    decimal orderTotal = Model.Items.Sum(
+        item => item.UnitPrice * item.Quantity
+    );
+
+    var availableTransitions = Model.Status switch
+    {
+        Order_Status.Pending => new[]
+        {
+            Order_Status.Accepted,
+            Order_Status.Cancelled
+        },
+
+        Order_Status.Accepted => new[]
+        {
+            Order_Status.Preparing,
+            Order_Status.Cancelled
+        },
+
+        Order_Status.Preparing => new[]
+        {
+            Order_Status.Shipped,
+            Order_Status.Cancelled
+        },
+
+        Order_Status.Shipped => new[]
+        {
+            Order_Status.Delivered
+        },
+
+        _ => Array.Empty<Order_Status>()
+    };
+}
+
+<div class="container my-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1>MANAGE ORDER</h1>
+            <h5 class="text-muted">Order #@Model.OrderId</h5>
+        </div>
+
+        <a asp-controller="AdminOrders"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            BACK TO ORDERS
+        </a>
+    </div>
+
+    <!-- Feedback messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Order information -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">ORDER INFORMATION</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <strong>Order number:</strong>
+                    <p>#@Model.OrderId</p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Order date:</strong>
+                    <p>
+                        @(Model.CreatedAtUtc.ToLocalTime()
+                                                .ToString("dd/MM/yyyy HH:mm"))
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Current status:</strong>
+                    <p>
+                        @switch (Model.Status)
+                        {
+                            case Order_Status.Pending:
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                break;
+
+                            case Order_Status.Accepted:
+                                <span class="badge bg-info text-dark">Accepted</span>
+                                break;
+
+                            case Order_Status.Preparing:
+                                <span class="badge bg-primary">Preparing</span>
+                                break;
+
+                            case Order_Status.Shipped:
+                                <span class="badge bg-secondary">Shipped</span>
+                                break;
+
+                            case Order_Status.Delivered:
+                                <span class="badge bg-success">Delivered</span>
+                                break;
+
+                            case Order_Status.Cancelled:
+                                <span class="badge bg-danger">Cancelled</span>
+                                break;
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Order total:</strong>
+                    <p class="fw-bold">
+                        @orderTotal.ToString("C", culture)
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer information -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">CUSTOMER INFORMATION</h5>
+        </div>
+
+        <div class="card-body">
+            <p>
+                <strong>Email:</strong>
+                @Model.User.Email
+            </p>
+
+            <p>
+                <strong>Username:</strong>
+                @Model.User.UserName
+            </p>
+
+            <p class="mb-0">
+                <strong>Phone:</strong>
+                @(Model.User.PhoneNumber ?? "Not provided")
+            </p>
+        </div>
+    </div>
+
+    <!-- Shipping address -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">SHIPPING ADDRESS</h5>
+        </div>
+
+        <div class="card-body">
+            <p><strong>Recipient:</strong> @Model.RecipientName</p>
+            <p><strong>Phone:</strong> @Model.Phone</p>
+            <p><strong>Street:</strong> @Model.Street, @Model.Number</p>
+            <p><strong>Neighborhood:</strong> @Model.Neighborhood</p>
+            <p><strong>City:</strong> @Model.City, @Model.State</p>
+            <p><strong>Postal code:</strong> @Model.PostalCode</p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.References))
+            {
+                <p class="mb-0">
+                    <strong>References:</strong> @Model.References
+                </p>
+            }
+        </div>
+    </div>
+
+    <!-- Purchased books -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">PURCHASED BOOKS</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Unit price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            decimal subtotal = item.UnitPrice * item.Quantity;
+
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        @if (!string.IsNullOrWhiteSpace(item.CoverURLPicture))
+                                        {
+                                            <img src="@item.CoverURLPicture"
+                                                 alt="@item.BookTitle"
+                                                 style="width: 65px; height: 90px; object-fit: cover;" />
+                                        }
+
+                                        <strong>@item.BookTitle</strong>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @item.UnitPrice.ToString("C", culture)
+                                </td>
+
+                                <td>
+                                    @item.Quantity
+                                </td>
+
+                                <td>
+                                    @subtotal.ToString("C", culture)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">
+                                ORDER TOTAL
+                            </th>
+
+                            <th>
+                                @orderTotal.ToString("C", culture)
+                            </th>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status management -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">ORDER STATUS MANAGEMENT</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (availableTransitions.Length > 0)
+            {
+                <form asp-controller="AdminOrders"
+                      asp-action="UpdateStatus"
+                      asp-route-id="@Model.OrderId"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label">
+                            Select new status
+                        </label>
+
+                        <select id="newStatus"
+                                name="newStatus"
+                                class="form-select"
+                                required>
+
+                            <option value="" selected disabled>
+                                Choose a status
+                            </option>
+
+                            @foreach (var status in availableTransitions)
+                            {
+                                <option value="@status">
+                                    @status
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        UPDATE ORDER STATUS
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-secondary mb-0">
+                    This order has reached a final status.
+                    No further changes are allowed.
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

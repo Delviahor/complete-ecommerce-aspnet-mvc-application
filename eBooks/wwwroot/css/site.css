@@ -948,4 +948,80 @@ textarea:focus-visible {
         padding: 6px 4px;
     }
 }
+/* ACCOUNT NAVIGATION */
 
+.account-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+    .account-navigation a,
+    .account-navigation button {
+        color: #fff;
+        background: #29205c;
+        border: 2px solid #a78bfa;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+        .account-navigation a:hover,
+        .account-navigation button:hover {
+            color: #fff;
+            background: #7046c7;
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px #a78bfa;
+        }
+
+    .account-navigation form {
+        margin: 0;
+    }
+
+@media (max-width: 576px) {
+    .account-navigation {
+        gap: 8px;
+    }
+
+        .account-navigation a,
+        .account-navigation button {
+            font-size: 0.75rem;
+            padding: 7px 9px;
+        }
+}
+
+/* Orders table */
+.orders-table {
+    color: #ffffff;
+}
+
+    .orders-table tbody tr {
+        color: #ffffff;
+        transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+        .orders-table tbody tr:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+    .orders-table tbody td {
+        color: inherit !important;
+    }
+
+    .orders-table tbody tr:hover td {
+        color: #ffffff !important;
+    }
+
+/* USER PROFILE */
+.retro-main .user-profile p,
+.retro-main .user-profile .profile-panel-body {
+    color: #000000;
+}

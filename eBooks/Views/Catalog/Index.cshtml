@@ -1,0 +1,87 @@
+﻿@model IEnumerable<eBooks.Models.Book>
+
+@{
+    ViewData["Title"] = "Books catalog";
+}
+
+<div class="container py-4">
+    <header class="mb-4">
+        <h1 class="display-5">Catálogo de libros</h1>
+        <p class="text-muted">
+            Explora nuestra colección y encuentra tu próxima lectura.
+        </p>
+    </header>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="status">
+            Por el momento no hay libros disponibles en el catálogo.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            @foreach (var book in Model)
+            {
+                <div class="col">
+                    <article class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrWhiteSpace(book.CoverURLPicture))
+                        {
+                            <img src="@book.CoverURLPicture"
+                                 class="card-img-top"
+                                 alt="Portada de @book.Title"
+                                 style="height: 280px; object-fit: contain; padding: 12px;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="height: 280px;">
+                                <span class="text-muted">Sin portada</span>
+                            </div>
+                        }
+
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="h5 card-title">@book.Title</h2>
+
+                            <p class="text-muted small mb-2">
+                                @book.Category?.Name
+                            </p>
+
+                            <p class="card-text">
+                                @if (book.AuthorBooks.Any())
+                                {
+                                    @string.Join(", ", book.AuthorBooks.Select(ab => ab.Author.FullName))
+                                }
+                                else
+                                {
+                                    <span>Autor no especificado</span>
+                                }
+                            </p>
+
+                            <p class="fw-bold fs-5 mt-auto">
+                                @book.Price.ToString("C")
+                            </p>
+
+                            @if (book.Status == eBooks.Data.Enums.Book_Status.OutOfStock
+                                                || book.InStock <= 0)
+                            {
+                                <p class="text-danger small">Agotado</p>
+                            }
+                            else
+                            {
+                                <p class="text-success small">Disponible</p>
+                            }
+
+                            <a asp-controller="Catalog"
+                               asp-action="Details"
+                               asp-route-id="@book.BookId"
+                               class="btn btn-primary mt-2">
+                                Ver detalles
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</div>

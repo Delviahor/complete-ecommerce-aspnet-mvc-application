@@ -1,0 +1,170 @@
+﻿@model IEnumerable<eBooks.Models.Order>
+
+@using eBooks.Data.Enums
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "My Orders";
+    var culture = new CultureInfo("es-MX");
+}
+
+<div class="container my-5">
+
+    <h1 class="mb-4">MY ORDERS</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            You haven't placed any orders yet.
+        </div>
+
+        <a asp-controller="Catalog"
+           asp-action="Index"
+           class="btn btn-primary">
+            EXPLORE CATALOG
+        </a>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle orders-table">
+
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        decimal orderTotal = order.Items.Sum(
+                        item => item.UnitPrice * item.Quantity
+                        );
+
+                        <tr>
+                            <td>
+                                <strong>#@order.OrderId</strong>
+                            </td>
+
+                            <td>
+                                @(order.CreatedAtUtc.ToLocalTime()
+                                .ToString("dd/MM/yyyy HH:mm"))
+                            </td>
+
+                            <td>
+                                @order.Items.Sum(item => item.Quantity)
+                            </td>
+
+                            <td>
+                                @orderTotal.ToString("C", culture)
+                            </td>
+
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case Order_Status.Pending:
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                        break;
+
+                                    case Order_Status.Accepted:
+                                        <span class="badge bg-info text-dark">
+                                            Accepted
+                                        </span>
+                                        break;
+
+                                    case Order_Status.Preparing:
+                                        <span class="badge bg-primary">
+                                            Preparing
+                                        </span>
+                                        break;
+
+                                    case Order_Status.Shipped:
+                                        <span class="badge bg-secondary">
+                                            Shipped
+                                        </span>
+                                        break;
+
+                                    case Order_Status.Delivered:
+                                        <span class="badge bg-success">
+                                            Delivered
+                                        </span>
+                                        break;
+
+                                    case Order_Status.Cancelled:
+                                        <span class="badge bg-danger">
+                                            Cancelled
+                                        </span>
+                                        break;
+                                }
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+
+                                    <a asp-controller="Orders"
+                                       asp-action="Details"
+                                       asp-route-id="@order.OrderId"
+                                       class="btn btn-outline-primary btn-sm">
+                                        VIEW DETAILS
+                                    </a>
+
+                                    @if (order.Status == Order_Status.Pending)
+                                    {
+                                        <form asp-controller="Orders"
+                                              asp-action="Cancel"
+                                              asp-route-id="@order.OrderId"
+                                              method="post"
+                                              onsubmit="return confirm('Are you sure you want to cancel this order?');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm">
+                                                CANCEL ORDER
+                                            </button>
+                                        </form>
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Account"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            BACK TO MY ACCOUNT
+        </a>
+    </div>
+
+</div>

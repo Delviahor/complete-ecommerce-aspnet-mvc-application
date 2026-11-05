@@ -5,6 +5,11 @@
       enctype="multipart/form-data">
 
     @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="DisplayName">Public name</label>
+        <input asp-for="DisplayName" />
+        <span asp-validation-for="DisplayName"></span>
+    </div>
 
     <div>
         <label asp-for="AboutMe"></label>

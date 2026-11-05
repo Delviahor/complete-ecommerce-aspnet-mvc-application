@@ -10,7 +10,7 @@
                asp-area="Identity"
                asp-page="/Account/Manage/Index"
                title="Manage">
-                Hola, @UserManager.GetUserName(User)!
+                Hi, @UserManager.GetUserName(User)!
             </a>
         </li>
 
@@ -20,7 +20,7 @@
                   asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
                   method="post">
                 <button type="submit" class="nav-link btn btn-link">
-                    Cerrar sesión
+                    Log out
                 </button>
             </form>
         </li>
@@ -31,7 +31,7 @@
             <a class="nav-link"
                asp-area="Identity"
                asp-page="/Account/Register">
-                Registrarse
+                Register
             </a>
         </li>
 
@@ -39,7 +39,7 @@
             <a class="nav-link"
                asp-area="Identity"
                asp-page="/Account/Login">
-                Iniciar sesión
+                Login
             </a>
         </li>
     }

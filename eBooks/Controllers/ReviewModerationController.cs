@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eBooks.Controllers
 {
-    [Authorize(Roles = "Admin,Moderator")]
+    [Authorize(Roles = "Admin")]
     public class ReviewModerationController : Controller
     {
         private readonly IBookReviewsService _bookReviewsService;

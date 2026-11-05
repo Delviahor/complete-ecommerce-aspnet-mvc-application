@@ -13,7 +13,7 @@ namespace eBooks.Data.Services
             _context = context;
         }
 
-        // Gets a profile by its Identity user ID.
+        // Retrieves a user profile by its associated Identity user ID.
         public async Task<UserProfile?> GetByUserIdAsync(string userId)
         {
             return await _context.UserProfiles
@@ -22,9 +22,10 @@ namespace eBooks.Data.Services
             .FirstOrDefaultAsync(profile => profile.UserId == userId); ;
         }
 
-        // Gets an existing profile or creates a new one.
+        // Retrieves an existing profile or creates one if it does not exist.
         public async Task<UserProfile> GetOrCreateAsync(string userId)
         {
+            // Verify that the Identity user exists before creating a profile.
             var profile = await _context.UserProfiles
                 .FirstOrDefaultAsync(profile => profile.UserId == userId);
 
@@ -48,6 +49,7 @@ namespace eBooks.Data.Services
                 CreatedAtUtc = DateTime.UtcNow
             };
 
+            // Add the new profile and persist it to the database.
             _context.UserProfiles.Add(profile);
 
             await _context.SaveChangesAsync();
@@ -55,6 +57,7 @@ namespace eBooks.Data.Services
             return profile;
         }
 
+        // Counts the published book reviews submitted by the specified user.
         public async Task<int> GetPublishedReviewsCountAsync(string userId)
         {
             return await _context.BookReviews
@@ -63,7 +66,7 @@ namespace eBooks.Data.Services
             review.Status == Review_Status.Published);
         }
 
-        // Updates the public information of a profile.
+        // Updates the profile's biography and profile picture.
         public async Task UpdateAsync(
             string userId,
             string? aboutMe,
@@ -71,7 +74,24 @@ namespace eBooks.Data.Services
         {
             var profile = await GetOrCreateAsync(userId);
 
-            profile.AboutMe = aboutMe;
+            profile.AboutMe = aboutMe?.Trim();
+            profile.ProfilePicture = profilePicture;
+            profile.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+        }
+
+        // Updates the profile's display name, biography, and profile picture.
+        public async Task UpdateAsync(
+            string userId,
+            string? displayName,
+            string? aboutMe,
+            string? profilePicture)
+        {
+            var profile = await GetOrCreateAsync(userId);
+
+            profile.DisplayName = displayName?.Trim();
+            profile.AboutMe = aboutMe?.Trim();
             profile.ProfilePicture = profilePicture;
             profile.UpdatedAtUtc = DateTime.UtcNow;
 

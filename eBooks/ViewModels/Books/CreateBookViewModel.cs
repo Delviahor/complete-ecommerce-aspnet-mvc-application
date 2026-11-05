@@ -6,10 +6,11 @@ namespace eBooks.ViewModels.Books
 {
     public class CreateBookViewModel
     {
-        [StringLength(100, ErrorMessage = "El titulo no puede superar los 100 caracteres.")]
-        public string Title { get; set; }
+        [Required(ErrorMessage = "The title is mandatory.")]
+        [StringLength(100, ErrorMessage = "The title cannot exceed 100 characters..")]
+        public string Title { get; set; } = string.Empty;
 
-        [StringLength(600, ErrorMessage = "La descripcion no puede superar los 600 caracteres.")]
+        [StringLength(600, ErrorMessage = "The description cannot exceed 600 characters.")]
         public string? Description { get; set; }
         public int Pages { get; set; }
         public decimal Price { get; set; }

@@ -1,5 +1,4 @@
-﻿
-using eBooks.Data.Enums;
+﻿using eBooks.Data.Enums;
 using eBooks.Data.Services;
 using eBooks.ViewModels.Checkout;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +24,7 @@ namespace eBooks.Controllers
             _ordersService = ordersService;
         }
 
-        // Obtiene el ID del usuario autenticado.
+        // Gets the ID of the authenticated user.
         private string? GetUserId()
         {
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -41,20 +40,20 @@ namespace eBooks.Controllers
                 return Challenge();
             }
 
-            // Obtiene el carrito del usuario.
+            // Retrieves the user's cart.
             var cart = await _cartService.GetOrCreateCartAsync(userId);
 
-            // No se puede iniciar el checkout con un carrito vacío.
+            // You cannot start the checkout process with an empty cart.
             if (!cart.Items.Any())
             {
                 return RedirectToAction("Index", "Cart");
             }
 
-            // Obtiene únicamente las direcciones del usuario.
+            // Retrieves only the user's addresses.
             var addresses = await _addressesService
                 .GetAllByUserIdAsync(userId);
 
-            // Construye el modelo de vista.
+            // Build the view model.
             var model = new CheckoutViewModel
             {
                 Items = cart.Items.Select(item =>
@@ -125,7 +124,7 @@ namespace eBooks.Controllers
                 return Unauthorized();
             }
 
-            // Validar que se haya seleccionado una dirección.
+            // Validate that an address has been selected.
             if (selectedAddressId == null || selectedAddressId <= 0)
             {
                 TempData["Error"] = "You must select a shipping address.";
@@ -134,7 +133,7 @@ namespace eBooks.Controllers
 
             try
             {
-                // Crear la orden y obtener su identificador.
+                // Create the order and obtain its identifier.
                 var orderId = await _ordersService.CreateOrderAsync(
                     userId,
                     selectedAddressId.Value);
@@ -145,7 +144,7 @@ namespace eBooks.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                // Mostrar errores de validación del carrito o la dirección.
+                // Display validation errors for the cart or the address.
                 TempData["Error"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }

@@ -14,7 +14,7 @@ namespace eBooks.Data.Services
             _environment = environment;
         }
 
-        // Guarda una imagen después de validar su formato y tamaño.
+        // Validates and saves a profile image using a unique server-generated filename.
         public async Task<string> SaveAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -23,7 +23,7 @@ namespace eBooks.Data.Services
             if (file.Length > MaxFileSize)
                 throw new InvalidOperationException("The image cannot exceed 2 MB.");
 
-            // Detectamos el formato mediante su firma binaria.
+            // Determine the actual image format by inspecting its binary signature.
             var extension = await GetImageExtensionAsync(file);
 
             var fileName = $"profile-{Guid.NewGuid():N}{extension}";
@@ -33,11 +33,12 @@ namespace eBooks.Data.Services
                 "images",
                 "profiles");
 
+            // Ensure the upload directory exists before saving the file.
             Directory.CreateDirectory(uploadsFolder);
 
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // CreateNew evita sobrescribir un archivo existente.
+            // CreateNew prevents overwriting files with an existing filename.
             await using (var stream = new FileStream(
                 filePath,
                 FileMode.CreateNew,
@@ -47,17 +48,17 @@ namespace eBooks.Data.Services
                 await file.CopyToAsync(stream);
             }
 
-            // Ruta relativa que se almacenará en la base de datos.
+            // Relative path that will be stored in the database.
             return $"/images/profiles/{fileName}";
         }
 
-        // Elimina una imagen anterior almacenada por este servicio.
+        // Deletes a previously uploaded profile image if it belongs to this service.
         public Task DeleteAsync(string? imagePath)
         {
             if (string.IsNullOrWhiteSpace(imagePath))
                 return Task.CompletedTask;
 
-            // Solo permitimos nombres de archivo de nuestra carpeta.
+            // Extract the filename to prevent directory traversal through the supplied path.
             var fileName = Path.GetFileName(imagePath);
 
             if (!fileName.StartsWith(
@@ -80,7 +81,7 @@ namespace eBooks.Data.Services
             return Task.CompletedTask;
         }
 
-        // Identifica JPEG, PNG o WebP mediante sus bytes iniciales.
+        // Identifies JPEG, PNG, or WebP based on their initial bytes.
         private static async Task<string> GetImageExtensionAsync(
             IFormFile file)
         {

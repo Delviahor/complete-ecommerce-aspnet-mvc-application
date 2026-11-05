@@ -1,6 +1,6 @@
 ﻿@model eBooks.ViewModels.Categories.CreateCategoryViewModel
 
-<h1>Nueva categoría</h1>
+<h1>New category</h1>
 
 <form asp-controller="Categories"
       asp-action="Create"
@@ -8,7 +8,7 @@
 
     <div class="mb-3">
         <label asp-for="Name" class="form-label">
-            Nombre de la categoría
+            Category name
         </label>
 
         <input asp-for="Name" class="form-control" />
@@ -18,13 +18,13 @@
     </div>
 
     <button type="submit" class="btn btn-primary">
-        Guardar
+        Save
     </button>
 
     <a asp-controller="Categories"
        asp-action="Index"
        class="btn btn-secondary">
-        Cancelar
+        Cancel
     </a>
 </form>
 

@@ -89,7 +89,7 @@ namespace eBooks.Controllers
             {
                 await _categoriesService.UpdateAsync(id, category);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception (ex) here if needed
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the category.");

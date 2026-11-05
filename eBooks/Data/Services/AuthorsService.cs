@@ -12,28 +12,36 @@ namespace eBooks.Data.Services
         {
             _context = context;
         }
+        // Retrieves all authors from the database.
         public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
         {
             return await _context.Authors.ToListAsync();
         }
 
+        // Adds a new author and saves the changes to the database.
         public async Task AddAsync(Author author)
         {
             _context.Authors.Add(author);
             await _context.SaveChangesAsync();
         }
+        // Retrieves an author by its ID.
+        // Returns null if no matching author is found.
         public async Task<Author?> GetByIdAsync(int id)
         {
             return await _context.Authors.FirstOrDefaultAsync(a => a.AuthorId == id);
         }
         public async Task UpdateAsync(int id, Author author)
         {
+            // Finds the existing author that will be updated.
             var existingAuthor = await _context.Authors.FindAsync(id);
+
+            // Throws an exception if the author does not exist.
             if (existingAuthor == null)
             {
                 throw new KeyNotFoundException(
-                $"No se encontró el autor con ID {id}.");
+                $"Author with ID {id} not found.");
             }
+            // Updates the author's information with the provided values.
             existingAuthor.FullName = author.FullName;
             existingAuthor.ProfileURLPicture = author.ProfileURLPicture;
             existingAuthor.Biography = author.Biography;

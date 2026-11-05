@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -51,9 +50,10 @@
             <div class="account-navigation">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    <a asp-controller="Account"
-                       asp-action="Index">
-                        👤 MY ACCOUNT
+                    <a asp-controller="UserProfiles"
+                       asp-action="Details"
+                       asp-route-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
+                        👤 MY PROFILE
                     </a>
 
                     <a asp-controller="Cart"
@@ -123,17 +123,7 @@
                             </a>
                         </li>
 
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="UserProfiles"
-                                   asp-action="Details"
-                                   asp-route-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
-                                    My Profile
-                                </a>
-                            </li>
-                        }
+                        
                     </ul>
 
 
@@ -144,7 +134,7 @@
                             <a class="retro-button text-decoration-none"
                                asp-controller="Admin"
                                asp-action="Index">
-                                🛠 ADMINISTRAR SITIO
+                                🛠 MANAGE SITE
                             </a>
                         }
                     </div>

@@ -13,6 +13,10 @@ namespace eBooks.Models
         [ForeignKey(nameof(UserId))]
         public IdentityUser User { get; set; } = null!;
 
+        // Public display name.
+        [MaxLength(50)]
+        public string? DisplayName { get; set; }
+
         // Profile image URL or stored file path.
         [MaxLength(500)]
         public string? ProfilePicture { get; set; }

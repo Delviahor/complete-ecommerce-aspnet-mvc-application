@@ -20,7 +20,7 @@ namespace eBooks.Controllers
         // GET: /Profile
         public async Task<IActionResult> Index()
         {
-            // Obtiene al usuario actualmente autenticado.
+            // Gets the currently authenticated user.
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
@@ -28,7 +28,7 @@ namespace eBooks.Controllers
                 return NotFound();
             }
 
-            // Convertimos IdentityUser en AccountViewModel.
+            // We convert IdentityUser into AccountViewModel.
             var model = new AccountViewModel
             {
                 UserName = user.UserName,

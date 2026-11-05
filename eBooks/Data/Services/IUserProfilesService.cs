@@ -10,6 +10,7 @@ namespace eBooks.Data.Services
 
         Task UpdateAsync(
             string userId,
+            string? displayName,
             string? aboutMe,
             string? profilePicture);
 

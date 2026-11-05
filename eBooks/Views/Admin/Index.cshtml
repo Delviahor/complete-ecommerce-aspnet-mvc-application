@@ -1,13 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Administrar sitio";
+    ViewData["Title"] = "Manage site";
 }
 
 <div class="container py-4">
-    <h1>🛠 Administrar sitio</h1>
+    <h1>🛠 Manage site</h1>
 
     <p>
-        Centro de administración de eBooks.exe.
-        Selecciona la sección que deseas gestionar.
+        eBooks.exe Administration Center
+        Select the section you wish to manage.
     </p>
 
     <div class="row g-3 mt-3">
@@ -15,7 +15,7 @@
             <a asp-controller="Books"
                asp-action="Index"
                class="btn btn-primary w-100">
-                📚 Libros
+                📚 Books
             </a>
         </div>
 
@@ -23,7 +23,7 @@
             <a asp-controller="Authors"
                asp-action="Index"
                class="btn btn-primary w-100">
-                ✍️ Autores
+                ✍️ Authors
             </a>
         </div>
 
@@ -31,7 +31,7 @@
             <a asp-controller="Categories"
                asp-action="Index"
                class="btn btn-primary w-100">
-                💿 Categorías
+                💿 Categories
             </a>
         </div>
 
@@ -39,7 +39,7 @@
             <a asp-controller="Publishers"
                asp-action="Index"
                class="btn btn-primary w-100">
-                🏢 Editoriales
+                🏢 Publishers
             </a>
         </div>
 
@@ -47,16 +47,25 @@
             <a asp-controller="AdminOrders"
                asp-action="Index"
                class="btn btn-primary w-100">
-                📦 Gestionar pedidos
+                📦 Manage orders
             </a>
         </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <a asp-controller="ReviewModeration"
+               asp-action="Index"
+               class="btn btn-primary w-100">
+                ⭐ Moderate reviews
+            </a>
+        </div>
+
     </div>
 
     <div class="mt-4">
         <a asp-controller="Catalog"
            asp-action="Index"
            class="btn btn-outline-secondary">
-            Volver al catálogo público
+            Return to the public catalog
         </a>
     </div>
 

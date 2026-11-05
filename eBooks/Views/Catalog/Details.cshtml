@@ -1,23 +1,25 @@
-﻿@model eBooks.Models.Book
+﻿@model eBooks.ViewModels.Catalog.CatalogBookDetailsViewModel
 
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = Model.Book.Title;
+
+    var book = Model.Book;
 }
 
 <div class="container py-4">
     <nav aria-label="Navegación">
         <a asp-controller="Catalog" asp-action="Index"
            class="text-decoration-none">
-            &larr; Volver al catálogo
+            &larr; Return to the catalog
         </a>
     </nav>
 
     <div class="row g-4 g-lg-5 mt-2">
         <div class="col-12 col-md-5 col-lg-4">
-            @if (!string.IsNullOrWhiteSpace(Model.CoverURLPicture))
+            @if (!string.IsNullOrWhiteSpace(book.CoverURLPicture))
             {
-                <img src="@Model.CoverURLPicture"
-                     alt="Portada de @Model.Title"
+                <img src="@book.CoverURLPicture"
+                     alt="Portada de @book.Title"
                      class="img-fluid rounded shadow-sm w-100"
                      style="max-height: 560px; object-fit: contain;" />
             }
@@ -25,46 +27,42 @@
             {
                 <div class="bg-light rounded d-flex align-items-center justify-content-center"
                      style="min-height: 350px;">
-                    <span class="text-muted">Sin portada disponible</span>
+                    <span class="text-muted">No cover available</span>
                 </div>
             }
         </div>
 
-
-
         <div class="col-12 col-md-7 col-lg-8">
             <p class="text-muted mb-2">
-                @Model.Category?.Name
+                @book.Category?.Name
             </p>
 
-            <h1 class="display-5">@Model.Title</h1>
+            <h1 class="display-5">@book.Title</h1>
 
             <p class="fs-5">
-                @if (Model.AuthorBooks.Any())
+                @if (book.AuthorBooks.Any())
                 {
-                    @string.Join(", ", Model.AuthorBooks.Select(ab => ab.Author.FullName))
+                    @string.Join(", ", book.AuthorBooks.Select(ab => ab.Author.FullName))
                 }
                 else
                 {
-                    <span>Autor no especificado</span>
+                    <span>Author not specified</span>
                 }
             </p>
 
             <p class="text-muted">
-                Editorial: @(Model.Publisher?.Name ?? "No especificada")
+                Editorial: @(book.Publisher?.Name ?? "Not specified")
             </p>
 
             <p class="display-6 fw-bold my-4">
-                @Model.Price.ToString("C")
+                @book.Price.ToString("C")
             </p>
 
-
-
-            @if (Model.Status == eBooks.Data.Enums.Book_Status.OutOfStock
-                        || Model.InStock <= 0)
+            @if (book.Status == eBooks.Data.Enums.Book_Status.OutOfStock
+                        || book.InStock <= 0)
             {
                 <div class="alert alert-danger" role="status">
-                    Este libro está agotado actualmente.
+                    This book is no longer available.
                 </div>
             }
             else
@@ -74,9 +72,8 @@
                 </div>
             }
 
-
-            @if (Model.Status == eBooks.Data.Enums.Book_Status.Published
-                        && Model.InStock > 0)
+            @if (book.Status == eBooks.Data.Enums.Book_Status.Published
+                        && book.InStock > 0)
             {
                 <form asp-controller="Cart"
                       asp-action="Add"
@@ -87,11 +84,11 @@
 
                     <input type="hidden"
                            name="bookId"
-                           value="@Model.BookId" />
+                           value="@book.BookId" />
 
                     <div class="mb-3">
                         <label for="quantity" class="form-label">
-                            Cantidad
+                            Quantity
                         </label>
 
                         <input type="number"
@@ -111,38 +108,235 @@
                 </form>
             }
 
-
-            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            @if (!string.IsNullOrWhiteSpace(book.Description))
             {
                 <section class="mt-4">
-                    <h2 class="h4">Descripción</h2>
-                    <p class="text-break">@Model.Description</p>
+                    <h2 class="h4">Description</h2>
+                    <p class="text-break">@book.Description</p>
                 </section>
             }
 
             <hr class="my-4" />
 
             <dl class="row">
-                <dt class="col-sm-4">Páginas</dt>
-                <dd class="col-sm-8">@Model.Pages</dd>
+                <dt class="col-sm-4">Pages</dt>
+                <dd class="col-sm-8">@book.Pages</dd>
 
-                <dt class="col-sm-4">Idioma</dt>
-                <dd class="col-sm-8">@Model.Language</dd>
+                <dt class="col-sm-4">Language</dt>
+                <dd class="col-sm-8">@book.Language</dd>
 
-                <dt class="col-sm-4">Formato</dt>
-                <dd class="col-sm-8">@Model.Format</dd>
+                <dt class="col-sm-4">Format</dt>
+                <dd class="col-sm-8">@book.Format</dd>
 
-                <dt class="col-sm-4">Publicación</dt>
-                <dd class="col-sm-8">@Model.PublicationDate.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-4">Publication</dt>
+                <dd class="col-sm-8">@book.PublicationDate.ToString("dd/MM/yyyy")</dd>
             </dl>
-
-
 
             <a asp-controller="Catalog"
                asp-action="Index"
                class="btn btn-outline-secondary mt-3">
-                Seguir explorando
+                Continue exploring
             </a>
         </div>
     </div>
+
+    <hr class="my-5" />
+
+    <!-- BOOK REVIEWS -->
+    <section id="reviews" class="mt-4">
+        <h2 class="h3">Reader reviews</h2>
+
+        <div class="mb-4">
+            @if (Model.TotalReviews > 0)
+            {
+                <p class="mb-1">
+                    <strong>@Model.AverageRating.ToString("0.0") / 5</strong>
+                    <span class="text-warning">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            @(i <= Math.Round(Model.AverageRating) ? "★" : "☆")
+                        }
+                    </span>
+                </p>
+
+                <p class="text-muted">
+                    @Model.TotalReviews published reviews.
+                </p>
+            }
+            else
+            {
+                <p class="text-muted">
+                    This book does not have any reviews yet.
+                </p>
+            }
+        </div>
+
+        <!-- OPERATION MESSAGES -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["Error"]
+            </div>
+        }
+
+        <!-- LIST OF PUBLISHED REVIEWS -->
+        @if (Model.Reviews.Any())
+        {
+            <div class="row g-3">
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="col-12">
+                        <article class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between flex-wrap gap-2">
+                                    <strong>
+                                        @(review.User?.UserName ?? "User")
+                                    </strong>
+
+                                    <span class="text-warning">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            @(i <= review.Rating ? "★" : "☆")
+                                        }
+                                    </span>
+                                </div>
+
+                                <p class="text-muted small mb-2">
+                                    @review.CreatedAtUtc.ToString("dd/MM/yyyy")
+                                    @if (review.IsVerifiedPurchase)
+                                    {
+                                        <span class="badge bg-success ms-2">
+                                            Verified purchase
+                                        </span>
+                                    }
+                                </p>
+
+                                <p class="mb-0 text-break">
+                                    @review.Content
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+        }
+
+        <hr class="my-4" />
+
+        <!-- USER REVIEW FORM OR STATUS -->
+        <div class="mt-4">
+            <h3 class="h4">Your opinion</h3>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                @if (Model.CurrentUserReview == null)
+                {
+                    <p class="text-muted">
+                        Share your experience with this book.
+                        Your review will be reviewed before it is published.
+                    </p>
+
+                    <form asp-controller="BookReviews"
+                          asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="BookId"
+                               value="@book.BookId" />
+
+                        <div class="mb-3">
+                            <label for="Rating" class="form-label">
+                                Qualification
+                            </label>
+
+                            <select id="Rating"
+                                    name="Rating"
+                                    class="form-select"
+                                    style="max-width: 200px;"
+                                    required>
+                                <option value="">Select a rating</option>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very good</option>
+                                <option value="3">3 - Well</option>
+                                <option value="2">2 - Regular</option>
+                                <option value="1">1 - Bad</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Content" class="form-label">
+                                Your review
+                            </label>
+
+                            <textarea id="Content"
+                              name="Content"
+                              class="form-control"
+                              rows="5"
+                              minlength="10"
+                              maxlength="1500"
+                              placeholder="Write your opinion about this book..."
+                              required></textarea>
+
+                            <small class="text-muted">
+                                Minimum 10 and maximum 1500 characters.
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Submit review
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        You have already submitted a review for this book.
+
+                        <p class="mb-2 mt-2">
+                            Your rating:
+                            <span class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    @(i <= Model.CurrentUserReview.Rating ? "★" : "☆")
+                                }
+                            </span>
+                        </p>
+
+                        <a asp-controller="BookReviews"
+                           asp-action="Edit"
+                           asp-route-bookId="@book.BookId"
+                           class="btn btn-outline-primary btn-sm">
+                            Edit my review
+                        </a>
+
+                        <p class="small text-muted mt-2 mb-0">
+                            If you edit your review, it will go back into review before being published.
+                        </p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">
+                    Log in to share your opinion about this book.
+                </p>
+
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   asp-route-returnUrl="@Context.Request.Path"
+                   class="btn btn-outline-primary">
+                    Login
+                </a>
+            }
+        </div>
+    </section>
 </div>

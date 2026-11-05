@@ -13,7 +13,10 @@ namespace eBooks.Data.Services
             _context = context;
         }
 
-        // Gets all publicly visible reviews for a book.
+        // Retrieves all published reviews for a specific book.
+        // Includes user information to display the reviewer's name and profile.
+        // AsNoTracking improves query performance since these reviews
+        // are only displayed and will not be modified.
         public async Task<List<BookReview>> GetPublishedByBookIdAsync(
             int bookId)
         {
@@ -27,7 +30,9 @@ namespace eBooks.Data.Services
                 .ToListAsync();
         }
 
-        // Gets a user's review for a specific book.
+        // Retrieves a specific user's review for a given book.
+        // AsNoTracking is used because this operation only checks
+        // whether a review exists and does not modify it.
         public async Task<BookReview?> GetByUserAndBookAsync(
             string userId,
             int bookId)
@@ -46,6 +51,8 @@ namespace eBooks.Data.Services
             int rating,
             string content)
         {
+            // Validates the review rating and content before processing.
+            // Ratings must be between 1 and 5, and review content cannot be empty.
             if (rating < 1 || rating > 5)
             {
                 throw new ArgumentOutOfRangeException(
@@ -59,7 +66,7 @@ namespace eBooks.Data.Services
                     "Review content cannot be empty.",
                     nameof(content));
             }
-
+            // Ensures that the specified user exists before creating the review.
             var userExists = await _context.Users
                 .AnyAsync(user => user.Id == userId);
 
@@ -68,7 +75,7 @@ namespace eBooks.Data.Services
                 throw new InvalidOperationException(
                     "The specified user does not exist.");
             }
-
+            // Ensures that the book exists before associating a review with it.
             var bookExists = await _context.Books
                 .AnyAsync(book => book.BookId == bookId);
 
@@ -77,7 +84,8 @@ namespace eBooks.Data.Services
                 throw new InvalidOperationException(
                     "The specified book does not exist.");
             }
-
+            // Prevents users from submitting more than one review
+            // for the same book.
             var existingReview = await _context.BookReviews
                 .AnyAsync(review =>
                     review.UserId == userId &&
@@ -89,13 +97,18 @@ namespace eBooks.Data.Services
                     "You have already reviewed this book.");
             }
 
-            // Only delivered orders count as verified purchases.
+            // A purchase is considered verified only when the user
+            // has a delivered order containing the reviewed book.
+            // Pending, cancelled, or other order statuses do not qualify.
             var isVerifiedPurchase = await _context.OrderItems
                 .AnyAsync(item =>
                     item.BookId == bookId &&
                     item.Order.UserId == userId &&
                     item.Order.Status == Order_Status.Delivered);
 
+            // Creates the review with its initial moderation status.
+            // All new reviews start as Pending and must be approved
+            // before becoming publicly visible.
             var review = new BookReview
             {
                 UserId = userId,
@@ -121,6 +134,8 @@ namespace eBooks.Data.Services
             int rating,
             string content)
         {
+            // Validates the updated rating and content using the same rules
+            // applied when creating a new review.
             if (rating < 1 || rating > 5)
             {
                 throw new ArgumentOutOfRangeException(
@@ -135,25 +150,32 @@ namespace eBooks.Data.Services
                     nameof(content));
             }
 
+            // Retrieves the review only if it belongs to the specified user.
+            // This prevents users from modifying reviews submitted by others.
             var review = await _context.BookReviews
                 .FirstOrDefaultAsync(review =>
                     review.BookReviewId == reviewId &&
                     review.UserId == userId);
 
+            // Throws an exception if the review does not exist
+            // or the user does not own it.
             if (review == null)
             {
                 throw new InvalidOperationException(
                     "Review not found or you do not have permission to edit it.");
             }
-
+            // Updates the review content and records the modification timestamp.
             review.Rating = rating;
             review.Content = content.Trim();
             review.UpdatedAtUtc = DateTime.UtcNow;
 
-            // Edited reviews return to moderation.
+            // Edited reviews return to Pending status.
+            // This ensures that any changes are reviewed by an administrator
+            // before becoming publicly visible again.
             review.Status = Review_Status.Pending;
 
-            // Recalculate purchase verification.
+            // Recalculates purchase verification using the user's current
+            // delivered orders to keep the verification status accurate.
             review.IsVerifiedPurchase = await _context.OrderItems
                 .AnyAsync(item =>
                     item.BookId == review.BookId &&
@@ -163,7 +185,10 @@ namespace eBooks.Data.Services
             await _context.SaveChangesAsync();
         }
 
-        // Gets reviews waiting for moderation.
+        // Retrieves all reviews awaiting administrator moderation.
+        // Includes user and book information to provide the administrator
+        // with the context needed to evaluate each review.
+        // Older submissions are displayed first.
         public async Task<List<BookReview>> GetPendingAsync()
         {
             return await _context.BookReviews
@@ -180,21 +205,24 @@ namespace eBooks.Data.Services
             int reviewId,
             Review_Status status)
         {
+            // Ensures that the provided moderation status is a valid
+            // Review_Status enum value before updating the review.
             if (!Enum.IsDefined(typeof(Review_Status), status))
             {
                 throw new ArgumentOutOfRangeException(nameof(status));
             }
-
+            // Retrieves the review that will receive the new moderation status.
             var review = await _context.BookReviews
                 .FirstOrDefaultAsync(review =>
                     review.BookReviewId == reviewId);
-
+            // Throws an exception if the specified review does not exist.
             if (review == null)
             {
                 throw new InvalidOperationException(
                     "Review not found.");
             }
-
+            // Applies the administrator's moderation decision.
+            // The new status determines whether the review is publicly visible.
             review.Status = status;
 
             await _context.SaveChangesAsync();

@@ -15,7 +15,7 @@ namespace eBooks.Controllers
             _bookReviewsService = bookReviewsService;
         }
 
-        // Muestra las reseñas publicadas de un libro.
+        // Displays the published reviews for a book.
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> ByBook(int bookId)
@@ -26,7 +26,7 @@ namespace eBooks.Controllers
             return View(reviews);
         }
 
-        // Crea una nueva reseña.
+        // Create a new review.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -69,7 +69,7 @@ namespace eBooks.Controllers
                 new { id = model.BookId });
         }
 
-        // Muestra el formulario para editar una reseña propia.
+        // Displays the form for editing one's own review.
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Edit(int bookId)
@@ -97,7 +97,7 @@ namespace eBooks.Controllers
             return View(model);
         }
 
-        // Actualiza una reseña propia.
+        // Updates a review of one's own.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -113,12 +113,12 @@ namespace eBooks.Controllers
             if (string.IsNullOrEmpty(userId))
                 return Challenge();
 
-            // Recuperamos la reseña asociada al usuario autenticado.
+            // We retrieve the review associated with the authenticated user.
             var review = await _bookReviewsService
                 .GetByUserAndBookAsync(userId, model.BookId);
 
-            // Comprobamos que el ID enviado corresponda
-            // realmente a esa reseña.
+            // We verify that the submitted ID actually
+            // corresponds to that review.
             if (review == null ||
                 review.BookReviewId != model.BookReviewId)
             {

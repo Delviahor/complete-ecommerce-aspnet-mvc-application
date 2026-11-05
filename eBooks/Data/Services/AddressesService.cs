@@ -13,6 +13,9 @@ namespace eBooks.Data.Services
             _context = context;
         }
 
+        // Retrieves all addresses belonging to a specific user.
+        // AsNoTracking improves read performance because the entities
+        // will not be modified in this operation.
         public async Task<List<Address>> GetAllByUserIdAsync(string userId)
         {
             return await _context.Addresses
@@ -21,6 +24,8 @@ namespace eBooks.Data.Services
                 .ToListAsync();
         }
 
+        // Retrieves an address only if it belongs to the specified user.
+        // This prevents users from accessing other users' addresses.
         public async Task<Address?> GetByIdAsync(
             int addressId,
             string userId)
@@ -33,12 +38,13 @@ namespace eBooks.Data.Services
 
         public async Task AddAsync(Address address)
         {
-            _context.Addresses.Add(address);
+            _context.Addresses.Add(address); // Adds a new address to the database and persists the changes.
 
             await _context.SaveChangesAsync();
         }
 
-
+        // Finds the address using both its ID and the owner's user ID
+        // to ensure that only the owner can update it.
         public async Task<bool> UpdateAsync(
             int addressId,
             string userId,
@@ -49,6 +55,8 @@ namespace eBooks.Data.Services
                     a.AddressId == addressId &&
                     a.UserId == userId);
 
+            // Returns false if the address does not exist
+            // or does not belong to the specified user.
             if (existingAddress == null)
             {
                 return false;
@@ -69,7 +77,8 @@ namespace eBooks.Data.Services
             return true;
         }
 
-
+        // Verifies that the address belongs to the specified user
+        // before allowing its deletion.
         public async Task<bool> DeleteAsync(
             int addressId,
             string userId)

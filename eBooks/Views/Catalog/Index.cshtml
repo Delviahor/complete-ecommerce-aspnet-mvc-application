@@ -8,14 +8,14 @@
     <header class="mb-4">
         <h1 class="display-5">Catálogo de libros</h1>
         <p class="text-muted">
-            Explora nuestra colección y encuentra tu próxima lectura.
+            Explore our collection and find your next read.
         </p>
     </header>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info" role="status">
-            Por el momento no hay libros disponibles en el catálogo.
+            At the moment, there are no books available in the catalog.
         </div>
     }
     else
@@ -36,7 +36,7 @@
                         {
                             <div class="bg-light d-flex align-items-center justify-content-center"
                                  style="height: 280px;">
-                                <span class="text-muted">Sin portada</span>
+                                <span class="text-muted">No cover</span>
                             </div>
                         }
 
@@ -54,7 +54,7 @@
                                 }
                                 else
                                 {
-                                    <span>Autor no especificado</span>
+                                    <span>Author not specified</span>
                                 }
                             </p>
 
@@ -65,18 +65,18 @@
                             @if (book.Status == eBooks.Data.Enums.Book_Status.OutOfStock
                                                 || book.InStock <= 0)
                             {
-                                <p class="text-danger small">Agotado</p>
+                                <p class="text-danger small">Out of stock</p>
                             }
                             else
                             {
-                                <p class="text-success small">Disponible</p>
+                                <p class="text-success small">Available</p>
                             }
 
                             <a asp-controller="Catalog"
                                asp-action="Details"
                                asp-route-id="@book.BookId"
                                class="btn btn-primary mt-2">
-                                Ver detalles
+                                View details
                             </a>
                         </div>
                     </article>

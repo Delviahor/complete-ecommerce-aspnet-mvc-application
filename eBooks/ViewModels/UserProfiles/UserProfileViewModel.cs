@@ -5,6 +5,7 @@
         public string UserId { get; set; } = string.Empty;
 
         public string UserName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
 
         public string? ProfilePicture { get; set; }
 

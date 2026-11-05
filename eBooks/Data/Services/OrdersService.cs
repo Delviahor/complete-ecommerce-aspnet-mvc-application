@@ -1,5 +1,4 @@
-﻿
-using eBooks.Data.Enums;
+﻿using eBooks.Data.Enums;
 using eBooks.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +13,9 @@ namespace eBooks.Data.Services
             _context = context;
         }
 
+        // Retrieve the order and verify that it belongs to the specified user.
+        // Ensure that only pending orders can be cancelled.
+        // Update the order status to Cancelled.
         public async Task<bool> CancelOrderAsync(int orderId, string userId)
         {
             var order = await _context.Orders
@@ -56,7 +58,7 @@ namespace eBooks.Data.Services
                 if (address == null)
                 {
                     throw new InvalidOperationException(
-                        "La dirección seleccionada no existe.");
+                        "The selected address does not exist.");
                 }
 
                 // 2. get cart user and validate books.
@@ -68,7 +70,7 @@ namespace eBooks.Data.Services
                 if (cart == null || !cart.Items.Any())
                 {
                     throw new InvalidOperationException(
-                        "Tu carrito está vacío.");
+                        "Your cart is empty.");
                 }
 
                 // 3. Validate that all books are still published and have enough stock.
@@ -77,20 +79,20 @@ namespace eBooks.Data.Services
                     if (item.Book == null)
                     {
                         throw new InvalidOperationException(
-                            "Uno de los libros del carrito ya no existe.");
+                            "One of the books in the cart no longer exists..");
                     }
 
                     if (item.Book.Status != Book_Status.Published)
                     {
                         throw new InvalidOperationException(
-                            $"El libro '{item.Book.Title}' ya no está publicado.");
+                            $"Book '{item.Book.Title}' it is no longer published..");
                     }
 
                     if (item.Book.InStock < item.Quantity)
                     {
                         throw new InvalidOperationException(
-                            $"Inventario insuficiente para '{item.Book.Title}'. " +
-                            $"Disponibles: {item.Book.InStock}.");
+                            $"Insufficient inventory for '{item.Book.Title}'. " +
+                            $"Available: {item.Book.InStock}.");
                     }
                 }
 
@@ -148,6 +150,7 @@ namespace eBooks.Data.Services
 
         public async Task<List<Order>> GetAllOrdersAsync()
         {
+            // Retrieve all orders with their items and associated users, ordered by creation date.
             return await _context.Orders
             .AsNoTracking()
             .Include(order => order.Items)
@@ -160,6 +163,7 @@ namespace eBooks.Data.Services
             int orderId,
             string userId)
         {
+            // Retrieve the requested order and its items, ensuring it belongs to the specified user.
             return await _context.Orders
                 .AsNoTracking()
                 .Include(order => order.Items)
@@ -170,6 +174,7 @@ namespace eBooks.Data.Services
 
         public async Task<Order?> GetOrderDetailsForAdminAsync(int orderId)
         {
+            // Retrieve an order with its items and associated user for administrative review.
             return await _context.Orders
             .AsNoTracking()
             .Include(order => order.Items)
@@ -179,6 +184,7 @@ namespace eBooks.Data.Services
 
         public async Task<List<Order>> GetOrdersByUserIdAsync(string userId)
         {
+            // Retrieve all orders belonging to the specified user, ordered from newest to oldest.
             return await _context.Orders
             .AsNoTracking()
             .Include(order => order.Items)
@@ -189,14 +195,17 @@ namespace eBooks.Data.Services
 
         public async Task<bool> UpdateOrderStatusAsync(int orderId, Order_Status newStatus)
         {
+            // Retrieve the order to be updated.
             var order = await _context.Orders
         .FirstOrDefaultAsync(order => order.OrderId == orderId);
 
+            // Return false if the requested order does not exist.
             if (order == null)
             {
                 return false;
             }
 
+            // Validate the requested status transition according to the order lifecycle rules.
             bool isValidTransition = order.Status switch
             {
                 Order_Status.Pending =>
@@ -226,6 +235,7 @@ namespace eBooks.Data.Services
                 return false;
             }
 
+            // Apply the new status after validating the transition.
             order.Status = newStatus;
 
             await _context.SaveChangesAsync();

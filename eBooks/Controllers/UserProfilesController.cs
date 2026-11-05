@@ -1,5 +1,4 @@
-﻿
-using eBooks.Data.Services;
+﻿using eBooks.Data.Services;
 using eBooks.ViewModels.UserProfiles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +28,8 @@ namespace eBooks.Controllers
 
             var profile = await _userProfilesService.GetByUserIdAsync(id);
 
-            // Si el perfil no existe y el usuario visita su propio perfil,
-            // creamos su registro.
+            // If the profile does not exist and the user visits his own profile,
+            // we create your record.
             if (profile == null)
             {
                 var currentUserId = User.FindFirstValue(
@@ -41,8 +40,8 @@ namespace eBooks.Controllers
 
                 profile = await _userProfilesService.GetOrCreateAsync(id);
 
-                // Volvemos a consultar para cargar también la información
-                // del usuario asociado al perfil.
+                // We perform another query to also load the information
+                // for the user associated with the profile.
                 profile = await _userProfilesService.GetByUserIdAsync(id);
 
                 if (profile == null)
@@ -53,6 +52,7 @@ namespace eBooks.Controllers
             {
                 UserId = profile.UserId,
                 UserName = profile.User.UserName ?? "Unknown user",
+                DisplayName = profile.DisplayName,
                 ProfilePicture = profile.ProfilePicture,
                 AboutMe = profile.AboutMe,
                 CreatedAtUtc = profile.CreatedAtUtc,
@@ -64,7 +64,7 @@ namespace eBooks.Controllers
         }
 
 
-        // Muestra el formulario de edición del perfil propio.
+        // Displays the form for editing one's own profile.
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Edit()
@@ -80,6 +80,7 @@ namespace eBooks.Controllers
 
             var model = new EditUserProfileViewModel
             {
+                DisplayName = profile.DisplayName,
                 AboutMe = profile.AboutMe,
                 CurrentProfilePicture = profile.ProfilePicture
             };
@@ -87,7 +88,7 @@ namespace eBooks.Controllers
             return View(model);
         }
 
-        // Actualiza la información del perfil propio.
+        // Updates the user's own profile information.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -111,24 +112,25 @@ namespace eBooks.Controllers
 
             try
             {
-                // Si se seleccionó una imagen, guardamos la nueva.
+                // If an image was selected, we save the new one.
                 if (model.ProfilePictureFile != null)
                 {
                     newProfilePicture = await _profilePictureService
                         .SaveAsync(model.ProfilePictureFile);
                 }
 
-                // Si no se subió una imagen nueva, conservamos la anterior.
+                // If no new image was uploaded, we keep the previous one.
                 var finalProfilePicture =
                     newProfilePicture ?? profile.ProfilePicture;
 
                 await _userProfilesService.UpdateAsync(
                     userId,
+                    model.DisplayName,
                     model.AboutMe,
                     finalProfilePicture);
 
-                // Eliminamos la imagen anterior solamente después
-                // de actualizar correctamente la base de datos.
+                // We delete the previous image only after
+                // successfully updating the database.
                 if (newProfilePicture != null &&
                     !string.IsNullOrEmpty(profile.ProfilePicture))
                 {
@@ -155,8 +157,8 @@ namespace eBooks.Controllers
                     "An error occurred while saving the image.");
             }
 
-            // Si falla la actualización, eliminamos el archivo nuevo
-            // para evitar dejar imágenes huérfanas.
+            // If the update fails, we delete the new file
+            // to avoid leaving orphaned images.
             if (newProfilePicture != null)
             {
                 await _profilePictureService.DeleteAsync(newProfilePicture);

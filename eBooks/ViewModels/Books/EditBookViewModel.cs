@@ -9,7 +9,7 @@ namespace eBooks.ViewModels.Books
 
         public string Title { get; set; } = string.Empty;
 
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
 
         public decimal Price { get; set; }
 
@@ -17,7 +17,7 @@ namespace eBooks.ViewModels.Books
 
         public IEnumerable<SelectListItem>? Categories { get; set; }
 
-        public string CoverURLPicture { get; set; } = string.Empty;
+        public string? CoverURLPicture { get; set; }
 
 
         //edit publisher, language, format, status, instock and pages

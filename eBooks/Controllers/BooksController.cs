@@ -112,7 +112,7 @@ namespace eBooks.Controllers
             }
             Console.WriteLine($"PublisherId: {model.PublisherId}");
             Console.WriteLine($"CategoryId: {model.CategoryId}");
-            Console.WriteLine($"Autores: {string.Join(", ", model.AuthorIds)}");
+            Console.WriteLine($"Authors: {string.Join(", ", model.AuthorIds)}");
 
             await _booksService.AddAsync(book);
 
@@ -219,7 +219,7 @@ namespace eBooks.Controllers
                 Pages = model.Pages
             };
 
-            Console.WriteLine("Autores seleccionados:");
+            Console.WriteLine("Authors selected:");
             Console.WriteLine(string.Join(",", model.AuthorIds));
 
             //Console.WriteLine(model.CategoryId);

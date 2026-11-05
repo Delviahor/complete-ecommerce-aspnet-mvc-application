@@ -4,8 +4,8 @@ namespace eBooks.ViewModels.Categories
 {
     public class CreateCategoryViewModel
     {
-        [Required(ErrorMessage = "El nombre es obligatorio.")]
-        [MaxLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
+        [Required(ErrorMessage = "The name is mandatory.")]
+        [MaxLength(100, ErrorMessage = "The name cannot exceed 100 characters.")]
         public string Name { get; set; } = string.Empty;
     }
 }

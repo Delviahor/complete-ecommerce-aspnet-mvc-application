@@ -1,7 +1,7 @@
 ﻿@model eBooks.ViewModels.UserProfiles.UserProfileViewModel
 
 @{
-    ViewData["Title"] = $"{Model.UserName}'s Profile";
+    ViewData["Title"] = $"{Model.DisplayName ?? Model.UserName}'s Profile";
 }
 
 <style>
@@ -99,17 +99,17 @@
         line-height: 1.6;
     }
 
-    /* Texto de About Me */
+    /* Text About Me */
     .profile-sidebar .profile-panel-body {
         color: #000000;
     }
 
-    /* Texto de información personal y otras secciones */
+    /* Personal information text and other sections */
     .profile-main .profile-panel-body {
         color: #000000;
     }
 
-    /* Descripción de About Me */
+    /* Description of About Me */
     .profile-description {
         color: #000000;
     }
@@ -178,9 +178,23 @@
 
 <div class="container user-profile">
 
-    <div class="profile-header mb-3">
-        <h2>Member Profile</h2>
-        <p>eBooks Community / User Information</p>
+    <div class="profile-header mb-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h2>Member Profile</h2>
+            <p>eBooks Community / User Information</p>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true &&
+                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.UserId)
+        {
+            <a asp-controller="Account"
+               asp-action="Index"
+               class="text-white text-decoration-none"
+               title="My Account"
+               aria-label="My Account">
+                <span style="font-size: 1.5rem;">⚙</span>
+            </a>
+        }
     </div>
 
     <div class="row g-3">
@@ -204,12 +218,16 @@
                 }
 
                 <h3 class="profile-username">
-                    @Model.UserName
+                    @(string.IsNullOrWhiteSpace(Model.DisplayName)
+                                        ? Model.UserName
+                                        : Model.DisplayName)
                 </h3>
 
                 <p class="profile-member-date">
-                    Member since @Model.CreatedAtUtc.ToString("MMMM yyyy")
+                    @Model.UserName
                 </p>
+
+                
 
                 @if (User.Identity?.IsAuthenticated == true &&
                                 User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.UserId)
@@ -229,11 +247,7 @@
                     </div>
 
                     <div class="profile-panel-body">
-                        <p class="profile-description">
-                            @(string.IsNullOrWhiteSpace(Model.AboutMe) 
-                            ? "This user has not added a description yet."
-                            : Model.AboutMe)
-                        </p>
+                        <p class="profile-description">@(string.IsNullOrWhiteSpace(Model.AboutMe)? "This user has not added a description yet.": Model.AboutMe)</p>
                     </div>
                 </div>
 
@@ -252,6 +266,13 @@
 
                     <div class="profile-panel-body">
                         <p>
+                            <strong>Display Name:</strong>
+                            @(string.IsNullOrWhiteSpace(Model.DisplayName)
+                                                        ? "Not specified"
+                                                        : Model.DisplayName)
+                        </p>
+
+                        <p>
                             <strong>Username:</strong>
                             @Model.UserName
                         </p>
@@ -260,6 +281,8 @@
                             <strong>Member since:</strong>
                             @Model.CreatedAtUtc.ToString("MMMM dd, yyyy")
                         </p>
+
+                        
                     </div>
                 </div>
 

@@ -9,7 +9,7 @@ namespace eBooks.ViewModels.Authors
         [MaxLength(100)]
         public string FullName { get; set; } = string.Empty;
 
-        [StringLength(600, ErrorMessage = "La biografia no puede superar los 600 caracteres.")]
+        [StringLength(600, ErrorMessage = "The biography cannot exceed 600 characters.")]
         public string? Biography { get; set; }
         public string? ProfileURLPicture { get; set; }
     }

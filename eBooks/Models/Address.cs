@@ -17,35 +17,35 @@ namespace eBooks.Models
         [ForeignKey(nameof(UserId))]
         public IdentityUser User { get; set; } = null!;
 
-        [Required(ErrorMessage = "El nombre del destinatario es obligatorio.")]
+        [Required(ErrorMessage = "The recipient's name is required.")]
         [MaxLength(100)]
         public required string RecipientName { get; set; }
 
-        [Required(ErrorMessage = "El teléfono es obligatorio.")]
+        [Required(ErrorMessage = "A phone number is required.")]
         [MaxLength(20)]
         public required string Phone { get; set; }
 
-        [Required(ErrorMessage = "La calle es obligatoria.")]
+        [Required(ErrorMessage = "The street is mandatory.")]
         [MaxLength(150)]
         public required string Street { get; set; }
 
-        [Required(ErrorMessage = "El número es obligatorio.")]
+        [Required(ErrorMessage = "The number is mandatory.")]
         [MaxLength(20)]
         public required string Number { get; set; }
 
-        [Required(ErrorMessage = "La colonia es obligatoria.")]
+        [Required(ErrorMessage = "The neighborhood is mandatory..")]
         [MaxLength(100)]
         public required string Neighborhood { get; set; }
 
-        [Required(ErrorMessage = "La ciudad es obligatoria.")]
+        [Required(ErrorMessage = "The city is mandatory..")]
         [MaxLength(100)]
         public required string City { get; set; }
 
-        [Required(ErrorMessage = "El estado es obligatorio.")]
+        [Required(ErrorMessage = "The state is mandatory.")]
         [MaxLength(100)]
         public required string State { get; set; }
 
-        [Required(ErrorMessage = "El código postal es obligatorio.")]
+        [Required(ErrorMessage = "The postal code is mandatory.")]
         [MaxLength(10)]
         public required string PostalCode { get; set; }
 

@@ -3,10 +3,10 @@ namespace eBooks.ViewModels.Publishers
 {
     public class CreatePublisherViewModel
     {
-        [Required(ErrorMessage = "El nombre de la editorial es obligatorio.")]
-        [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
-        public string Name { get; set; }
-        [StringLength(600, ErrorMessage = "La URL no puede superar los 600 caracteres.")]
+        [Required(ErrorMessage = "The name of the publisher is mandatory.")]
+        [StringLength(100, ErrorMessage = "The name cannot exceed 100 characters.")]
+        public string Name { get; set; } = string.Empty;
+        [StringLength(600, ErrorMessage = "The URL cannot exceed 600 characters.")]
         public string? ProfileURLPicture { get; set; }
 
     }
